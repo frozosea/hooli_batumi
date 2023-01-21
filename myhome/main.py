@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import threading
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
@@ -44,7 +45,8 @@ class Request:
     async def send(self, url: str) -> str:
         async with ClientSession() as session:
             response = await session.get(url, headers=self.headers_generator.generate())
-
+            print(response.status)
+            # print(str(await response.text()))
             return str(await response.text())
 
 
@@ -93,7 +95,7 @@ class Parser:
         raw = soup.select_one(
             "#main_block > div.detail-page > div.main-features.row.no-gutters > div:nth-child(1) > div > span:nth-child(1)")
         str_square = raw.text.split(" ")[0]
-        return float(str_square)
+        return str_square
 
     def get_floor(self, soup: BeautifulSoup) -> str:
         try:
@@ -149,41 +151,43 @@ class Service:
             return None
 
 
-logging.basicConfig(level=logging.INFO)
-API_TOKEN = os.environ.get("BOT_TOKEN")
+class Handler:
+    def __init__(self, token):
+        self.__bot = Bot(token=token)
+        self.__dp = Dispatcher(self.__bot)
 
-bot = Bot(token=API_TOKEN)
+        self.__service = Service()
 
-# For example use simple MemoryStorage for Dispatcher.
-dp = Dispatcher(bot)
+        @self.__dp.message_handler(commands='start')
+        async def cmd_start(message: types.Message):
+            await message.reply("Привет! отправь ссылку и получи объявление")
 
-service = Service()
+        @self.__dp.message_handler()
+        async def parse(message: types.Message):
+            if "https://www.myhome.ge" in message.text:
+                await message.reply("В процессе парсинга... Это может занять несколько минут...")
+                result = await self.__service.get(message.text)
+                media = types.MediaGroup()
+                for index, image in enumerate(result.Images, 0):
+                    if index < 9:
+                        threading.Thread(target=media.attach_photo(types.InputFile.from_url(image),
+                                                                   self.generate_messsage(
+                                                                       result) if index == 0 else "")).start()
+                await self.__bot.send_media_group(chat_id=message.chat.id, media=media)
 
+    @staticmethod
+    def generate_messsage(r: Result):
+        return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$/{r.LariPrice if r.LariPrice else 0}₾\n\nАдрес: {r.Address} {("," + r.Floor) if r.Floor else ""}\n\nДополнительно: {", ".join(r.Benefits)}"""
 
-@dp.message_handler(commands='start')
-async def cmd_start(message: types.Message):
-    await message.reply("Привет! отправь ссылку с myhome.ge и получи объявление")
-
-
-def generate_messsage(r: Result):
-    return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$/{r.LariPrice if r.LariPrice else 0}₾\n\nАдрес: {r.Address} {("," + r.Floor) if r.Floor else ""}\n\nДополнительно: {", ".join(r.Benefits)}"""
-
-
-@dp.message_handler(content_types=types.ContentTypes.TEXT)
-async def parse(message: types.Message):
-    if "https://www.myhome.ge" in message.text:
-        await message.reply("В процессе парсинга...")
-        result = await service.get(message.text)
-        media = types.MediaGroup()
-        for index, image in enumerate(result.Images, 0):
-            if index < 9:
-                media.attach_photo(types.InputFile.from_url(image), generate_messsage(result) if index == 0 else "")
-        await bot.send_media_group(chat_id=message.chat.id, media=media)
+    def get_dp(self):
+        return self.__dp
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     try:
         load_dotenv()
     except Exception:
         print("No .env file")
-    executor.start_polling(dp)
+
+    executor.start_polling(Handler(os.environ.get("BOT_TOKEN")).get_dp())

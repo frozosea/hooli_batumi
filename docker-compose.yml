@@ -1,16 +1,5 @@
 version: "3.9"
 services:
-  chat_bot:
-    build: chat_bot
-    environment:
-      API_ID:
-      API_HASH:
-      PHONE_NUMBER:
-      PASSWORD:
-      SEND_GROUP_ID:
-    networks:
-      - public
-
   myhome_bot:
     build: myhome
     environment:
