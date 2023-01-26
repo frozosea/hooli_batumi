@@ -1,12 +1,27 @@
 version: "3.9"
 services:
-  myhome_bot:
-    build: myhome_appartment_parser
+  myhome_apartment_info_parser:
+    build: myhome_appartment_info_parser
     environment:
-      BOT_TOKEN: 5844427862:AAG0TwhGifTxt-vNrXCs8cK6YsbMu2vQ_1M
+      BOT_TOKEN: token
+      ALLOWED_USERS: user ids seperate by semicolon
     networks:
       - public
-
+  myhome_schedule_bot:
+    build: myhome_schedule_bot
+    environment:
+      BOT_TOKEN: token
+      ALLOWED_USERS: user ids seperate by semicolon
+    networks:
+      - public
+  client_parser_in_telegram_bot:
+    build: client_parser_in_telegram_bot
+    environment:
+      API_ID:
+      API_HASH:
+      SEND_GROUP_ID:
+    networks:
+        - public
 
 networks:
   public:

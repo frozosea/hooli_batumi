@@ -20,7 +20,7 @@ class HeadersGenerator:
 
     def generate(self) -> dict:
         return {
-            'authority': 'www.myhome_appartment_parser.ge',
+            'authority': 'www.myhome_appartment_info_parser.ge',
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,zh-TW;q=0.6,zh-CN;q=0.5,zh;q=0.4',
             'cache-control': 'max-age=0',
