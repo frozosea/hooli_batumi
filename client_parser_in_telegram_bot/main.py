@@ -17,6 +17,12 @@ class ChatBot:
                 return False
         return True
 
+    def __check_contains_give_rent_messages(self, message):
+        for word in ["сдам", "сдается", "сдадим", "сдаётся"]:
+            if word in message.lower():
+                return True
+        return False
+
     def __init__(self, api_id: str, api_hash: str, send_to_group_id: int):
         self.__client = TelegramClient('session_name', int(api_id), api_hash)
         self.__client.start()
@@ -25,10 +31,11 @@ class ChatBot:
         @self.__client.on(events.NewMessage())
         async def handler(event):
             message = event.message.message.lower()
-            for word in ["сниму", "снимем", "снять", "снимаем", "арендовать", "аренда", "арендуем", "арендую",
-                         "rent"]:
-                if word in message.lower() and self.__is_forward(event):
-                    await self.__client.forward_messages(send_to_group_id, event.message)
+            if self.__is_forward(event):
+                for word in ["сниму", "снимем", "снять", "снимаем", "арендовать", "аренда", "арендуем", "арендую",
+                             "rent", "arenduem", "snimem", "snimu", "sniat'", "sniat"]:
+                    if word in message.lower() and not self.__check_contains_give_rent_messages(message):
+                        await self.__client.forward_messages(send_to_group_id, event.message)
 
     def start(self):
         self.__client.run_until_disconnected()

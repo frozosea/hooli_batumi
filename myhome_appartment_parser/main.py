@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import threading
+# import numpy as np
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
@@ -19,7 +20,7 @@ class HeadersGenerator:
 
     def generate(self) -> dict:
         return {
-            'authority': 'www.myhome.ge',
+            'authority': 'www.myhome_appartment_parser.ge',
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,zh-TW;q=0.6,zh-CN;q=0.5,zh;q=0.4',
             'cache-control': 'max-age=0',
@@ -152,31 +153,37 @@ class Service:
 
 
 class Handler:
-    def __init__(self, token):
+
+    def __init__(self, token, allowed_users: List[int]):
         self.__bot = Bot(token=token)
         self.__dp = Dispatcher(self.__bot)
 
         self.__service = Service()
+        self.__allowed_users = allowed_users
 
         @self.__dp.message_handler(commands='start')
         async def cmd_start(message: types.Message):
-            await message.reply("Привет! отправь ссылку и получи объявление")
+            await message.reply("""Привет! этот бот принадлежит Hooli real estate inc. Отправь ссылку и получи выгрузку.
+            Если Вы не являетесь сотрудником нашей компании, пожалуйста, не пользуйтесь этим ботом. Спасибо!""")
 
         @self.__dp.message_handler()
         async def parse(message: types.Message):
-            if "https://www.myhome.ge" in message.text:
-                await message.reply("В процессе парсинга... Это может занять несколько минут...")
-                result = await self.__service.get(message.text)
-                media = types.MediaGroup()
-                for index, image in enumerate(result.Images, 0):
-                    if index < 9:
-                        threading.Thread(target=media.attach_photo(types.InputFile.from_url(image),
-                                                                   self.generate_messsage(
-                                                                       result) if index == 0 else "")).start()
-                await self.__bot.send_media_group(chat_id=message.chat.id, media=media)
+            user_id = message.from_user.id
+            if user_id in self.__allowed_users:
+                if "https://www.myhome.ge" in message.text:
+                    await message.reply("В процессе парсинга... Это может занять несколько минут...")
+                    result = await self.__service.get(message.text)
+                    media = types.MediaGroup()
+                    for index, image in enumerate(result.Images, 0):
+                        if index <= 10:
+                            media.attach_photo(types.InputFile.from_url(image),
+                                               self.__generate_messsage(result) if index == 0 else "")
+                    await self.__bot.send_media_group(chat_id=message.chat.id, media=media)
+            else:
+                await message.answer("У вас нет доступа к данному боту, обратитесь к администратору!")
 
     @staticmethod
-    def generate_messsage(r: Result):
+    def __generate_messsage(r: Result):
         return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$/{r.LariPrice if r.LariPrice else 0}₾\n\nАдрес: {r.Address} {("," + r.Floor) if r.Floor else ""}\n\nДополнительно: {", ".join(r.Benefits)}"""
 
     def get_dp(self):
@@ -190,4 +197,6 @@ if __name__ == '__main__':
     except Exception:
         print("No .env file")
 
-    executor.start_polling(Handler(os.environ.get("BOT_TOKEN")).get_dp())
+    allowed_users = os.environ.get("ALLOWED_USERS")
+    ar = [int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]
+    executor.start_polling(Handler(os.environ.get("BOT_TOKEN"), ar).get_dp())
