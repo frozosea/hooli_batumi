@@ -16,7 +16,7 @@ class Bot:
         @self.__dp.message_handler(commands='start')
         async def cmd_start(message: types.Message):
             await message.reply(
-                """Привет! это Hooli real estate schedule бот, отправь сообщение в формате(просто на каждой строке нужное поле, только в таком порядке!): 
+                """Привет! это Hooli real estate mh schedule бот, отправь сообщение в формате(просто на каждой строке нужное поле, только в таком порядке!): 
                     - `Command:` add/remove 
                     - `GroupId:` айди беседы, куда присылать сообщения с квартирами
                     - `Url:` ссылка (должная уже содержать в себе все фильтры)
