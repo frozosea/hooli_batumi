@@ -1,5 +1,9 @@
 version: "3.9"
 services:
+  browser_crawler:
+    build: browser-crawler
+    networks:
+      - public
   myhome_apartment_info_parser:
     build: myhome_appartment_info_parser
     environment:
@@ -21,7 +25,7 @@ services:
       API_HASH:
       SEND_GROUP_ID:
     networks:
-        - public
+      - public
 
 networks:
   public:
