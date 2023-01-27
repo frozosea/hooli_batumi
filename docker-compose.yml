@@ -15,7 +15,7 @@ services:
     networks:
       - public
   client_parser_in_telegram_bot:
-    build: client_parser_in_telegram_bot
+    build: client_on_rent_parser_in_telegram_bot
     environment:
       API_ID:
       API_HASH:

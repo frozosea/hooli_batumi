@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 from typing import Type
 
-from task import TaskProvider
+from myhome_schedule_bot.domain.task import TaskProvider
 from myhome_schedule_bot.domain.cron import ICronManager
 
 

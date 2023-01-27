@@ -4,9 +4,9 @@ from typing import Type
 import telethon.tl.types
 from telethon import TelegramClient
 from telethon import events
-from entity import Category
-from parser import IMessageParser
-from parser import IMessageChecker
+from appartment_parser_in_telegram.entity import Category
+from appartment_parser_in_telegram.parser import IMessageParser
+from appartment_parser_in_telegram.parser import IMessageChecker
 
 
 class Transport:

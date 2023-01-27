@@ -13,3 +13,4 @@ class Appartment:
     Square: int
     Benefits: List[str]
     Url: str
+    PhoneNumber: str

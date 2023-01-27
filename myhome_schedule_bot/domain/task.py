@@ -2,9 +2,9 @@ import datetime
 import threading
 from typing import Type
 from typing import Coroutine
-from delivery import IDelivery
-from repository import IRepository
-from provider import FlatProvider
+from myhome_schedule_bot.domain.delivery import IDelivery
+from myhome_schedule_bot.domain.repository import IRepository
+from myhome_schedule_bot.domain.provider import FlatProvider
 
 from myhome_schedule_bot.apartment_data_parser.provider import Provider as AppartmentInfoParser
 

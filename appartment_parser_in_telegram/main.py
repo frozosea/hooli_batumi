@@ -3,11 +3,11 @@ import logging
 import os
 from typing import List
 from dotenv import load_dotenv
-from entity import Category
-from parser import NumberParser
-from parser import MessageChecker
-from parser import MessageParser
-from transport import Transport
+from appartment_parser_in_telegram.entity import Category
+from appartment_parser_in_telegram.parser import NumberParser
+from appartment_parser_in_telegram.parser import MessageChecker
+from appartment_parser_in_telegram.parser import MessageParser
+from appartment_parser_in_telegram.transport import Transport
 
 
 def get_categories() -> List[Category]:

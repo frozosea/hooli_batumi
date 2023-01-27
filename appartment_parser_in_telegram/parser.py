@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Type
 from typing import List
 
-from entity import Category
+from appartment_parser_in_telegram.entity import Category
 
 
 class INumberParser(ABC):

@@ -41,16 +41,16 @@ class CronManager(ICronManager):
 
     def __init__(self):
         jobstores = {
-            'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+            'default': SQLAlchemyJobStore(url='sqlite:///database.sqlite')
         }
         self.__manager = AsyncIOScheduler(jobstores=jobstores)
 
     def add(self, task_id: any, fn: Callable, *args, **kwargs) -> Job:
         self.__manager.add_job(fn, id=task_id, *args, **kwargs)
-        return None
+        return
 
     def remove(self, task_id: any) -> None:
-        self.__manager.remove(task_id)
+        self.__manager.remove_job(task_id)
 
     def start(self):
         self.__manager.start()

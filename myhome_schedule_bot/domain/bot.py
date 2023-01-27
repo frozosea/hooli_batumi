@@ -3,7 +3,7 @@ from aiogram import Dispatcher
 from aiogram import types
 from aiogram.utils import executor
 
-from service import Service
+from myhome_schedule_bot.domain.service import Service
 
 
 class Bot:

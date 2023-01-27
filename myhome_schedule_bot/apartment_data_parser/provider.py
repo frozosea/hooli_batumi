@@ -1,13 +1,13 @@
 from typing import Type
-from entity import Appartment
-from request import IRequest
-from .parser import IParser
+from myhome_schedule_bot.apartment_data_parser.entity import Appartment
+from myhome_schedule_bot.apartment_data_parser.request import IRequest
+from myhome_schedule_bot.apartment_data_parser.parser import IParser
 
 
 class Provider:
     def __init__(self, request: Type[IRequest], parser: Type[IParser]):
-        self.__req = request()
-        self.__parser = parser()
+        self.__req = request
+        self.__parser = parser
 
     async def get(self, url: str) -> Appartment:
         try:

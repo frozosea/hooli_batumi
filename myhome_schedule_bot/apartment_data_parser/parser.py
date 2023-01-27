@@ -4,7 +4,7 @@ from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
 
-from entity import Appartment
+from myhome_schedule_bot.apartment_data_parser.entity import Appartment
 
 
 class IParser(ABC):
@@ -79,6 +79,14 @@ class Parser(IParser):
         except:
             return ""
 
+    @staticmethod
+    def __get_phone_number(soup: BeautifulSoup) -> str:
+        try:
+            return f"+995 {soup.select_one('#PhoneModal > div:nth-child(1) > a').text}"
+        except Exception as e:
+            print(e)
+            return ""
+
     def parse(self, url: str, string_html: str) -> Appartment:
         soup = BeautifulSoup(string_html, "lxml")
         return Appartment(
@@ -90,5 +98,6 @@ class Parser(IParser):
             LariPrice=self.__get_gel_price(soup),
             Benefits=self.__get_benefits(soup),
             Square=self.__get_square(soup),
-            Url=url
+            Url=url,
+            PhoneNumber=self.__get_phone_number(soup)
         )

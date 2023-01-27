@@ -2,7 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 import sqlite3
 
-from entity import LastAppartment
+from myhome_schedule_bot.domain.entity import LastAppartment
 
 
 class IRepository(ABC):
@@ -17,7 +17,7 @@ class IRepository(ABC):
 
 class Repository(IRepository):
     def __init__(self):
-        self.__con = sqlite3.connect("database.db")
+        self.__con = sqlite3.connect("database.sqlite")
 
     def migrate(self):
         self.__con.cursor().execute("""CREATE TABLE IF NOT EXISTS myhome (
