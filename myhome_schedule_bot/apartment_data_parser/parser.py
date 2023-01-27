@@ -82,7 +82,7 @@ class Parser(IParser):
     @staticmethod
     def __get_phone_number(soup: BeautifulSoup) -> str:
         try:
-            return f"+995 {soup.select_one('#PhoneModal > div:nth-child(1) > a').text}"
+            return f"+995 {soup.select_one('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button > div > var').text}"
         except Exception as e:
             print(e)
             return ""
