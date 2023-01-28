@@ -1,7 +1,7 @@
 from typing import Type
-from .entity import Appartment
-from .request import IRequest
-from .parser import IParser
+from entity import Appartment
+from request import IRequest
+from scrapper import IParser
 
 
 class Provider:

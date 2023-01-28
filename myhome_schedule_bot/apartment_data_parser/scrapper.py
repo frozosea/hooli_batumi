@@ -4,7 +4,7 @@ from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
 
-from .entity import Appartment
+from entity import Appartment
 
 
 class IParser(ABC):

@@ -1,6 +1,6 @@
 FROM python:3.8-slim-buster
-RUN mkdir app
-WORKDIR /app
+WORKDIR /myhome_schedule_bot
 RUN pip3 install aiogram aiohttp lxml bs4 python-dotenv apscheduler
-COPY . .
-CMD [ "python3","main.py"]
+COPY . /usr/src/app
+ENV PYTHONPATH "${PYTHONPATH}:/myhome_schedule_bot"
+CMD ["python", "app/main.py"]
