@@ -1,10 +1,10 @@
 from typing import Type
 
-from myhome_schedule_bot.domain.request import IRequest
+from request import IRequest
 
-from myhome_schedule_bot.domain.parser import Parser
+from scrapper import Parser
 
-from myhome_schedule_bot.domain.entity import LastAppartment
+from entity import LastAppartment
 
 
 class FlatProvider:
