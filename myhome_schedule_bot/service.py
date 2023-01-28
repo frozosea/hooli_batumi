@@ -8,7 +8,7 @@ from cron import ICronManager
 
 
 class Service:
-    def __init__(self, task_provider: TaskProvider, cron: Type[ICronManager], ):
+    def __init__(self, task_provider: TaskProvider, cron: Type[ICronManager]):
         self.__task_provider = task_provider
         self.__cron = cron
 

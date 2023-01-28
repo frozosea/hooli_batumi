@@ -28,7 +28,8 @@ if __name__ == '__main__':
         Request(browser_url=os.environ.get("BROWSER_URL"), auth_password=os.environ.get("AUTH_PASSWORD")), Parser())
     cron = CronManager()
     cron.start()
-    flat_provider = FlatProvider(DomainRequest())
+    flat_provider = FlatProvider(
+        DomainRequest(browser_url=os.environ.get("BROWSER_URL"), auth_password=os.environ.get("AUTH_PASSWORD")))
     repository = Repository()
     repository.migrate()
     bot = Bot(token=os.environ.get("BOT_TOKEN"))
