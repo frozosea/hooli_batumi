@@ -3,9 +3,9 @@ import os
 
 from dotenv import load_dotenv
 from aiogram import Bot
-from apartment_data_parser.request import Request
-from apartment_data_parser.scrapper import Parser
-from apartment_data_parser.provider import Provider as ApartmentDataParser
+from data_parser import Request
+from data_parser import Parser
+from data_parser import Provider as ApartmentDataParser
 
 from cron import CronManager
 from request import Request as DomainRequest
@@ -35,4 +35,4 @@ if __name__ == '__main__':
     delivery = Delivery(bot)
     task_provider = TaskProvider(delivery, repository, flat_provider, apartment_data_parser)
     service = Service(task_provider, cron)
-    TgBot(service, bot, [int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()
+    # TgBot(service, bot, [int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()

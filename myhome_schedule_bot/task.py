@@ -6,7 +6,7 @@ from delivery import IDelivery
 from repository import IRepository
 from provider import FlatProvider
 
-from apartment_data_parser.provider import Provider as AppartmentInfoParser
+from data_parser import Provider as AppartmentInfoParser
 
 
 class TaskProvider:

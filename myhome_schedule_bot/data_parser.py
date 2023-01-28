@@ -1,15 +1,54 @@
+import dataclasses
+from typing import Type
+from aiohttp import ClientSession
 import re
-from typing import List
 from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
+from typing import List
 
-from entity import Appartment
+
+@dataclasses.dataclass()
+class Apartment:
+    Images: List[str]
+    Address: str
+    UsdPrice: float
+    LariPrice: float
+    Floor: str
+    Description: str
+    Square: int
+    Benefits: List[str]
+    Url: str
+    PhoneNumber: str
+
+
+class IRequest(ABC):
+    @abstractmethod
+    async def send(self, url: str) -> str:
+        ...
+
+
+class Request(IRequest):
+
+    def __init__(self, browser_url: str, auth_password: str):
+        self.__browser_url = browser_url
+        self.__auth_password = auth_password
+
+    @staticmethod
+    def __get_script(url: str) -> str:
+        return open("script.js", "r").read() % url
+
+    async def send(self, url: str) -> str:
+        async with ClientSession() as session:
+            response = await session.post(self.__browser_url, headers={"Authorization": self.__auth_password},
+                                          data={"script": self.__get_script(url)})
+            j = await response.json()
+        return j["output"]
 
 
 class IParser(ABC):
     @abstractmethod
-    def parse(self, url: str, string_html: str) -> Appartment:
+    def parse(self, url: str, string_html: str) -> Apartment:
         ...
 
 
@@ -87,9 +126,9 @@ class Parser(IParser):
             print(e)
             return ""
 
-    def parse(self, url: str, string_html: str) -> Appartment:
+    def parse(self, url: str, string_html: str) -> Apartment:
         soup = BeautifulSoup(string_html, "lxml")
-        return Appartment(
+        return Apartment(
             Images=self.__get_images(soup),
             Address=self.__get_address(soup),
             Floor=self.__get_floor(soup),
@@ -101,3 +140,17 @@ class Parser(IParser):
             Url=url,
             PhoneNumber=self.__get_phone_number(soup)
         )
+
+
+class Provider:
+    def __init__(self, request: Type[IRequest], parser: Type[IParser]):
+        self.__req = request
+        self.__parser = parser
+
+    async def get(self, url: str) -> Apartment:
+        try:
+            string_html = await self.__req.send(url)
+            return self.__parser.parse(url=url, string_html=string_html)
+        except Exception as e:
+            print(e)
+            return None

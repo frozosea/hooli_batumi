@@ -1,1 +1,0 @@
-from myhome_schedule_bot import domain
