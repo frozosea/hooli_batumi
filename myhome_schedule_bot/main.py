@@ -36,5 +36,4 @@ if __name__ == '__main__':
     delivery = Delivery(bot)
     task_provider = TaskProvider(delivery, repository, flat_provider, apartment_data_parser)
     service = Service(task_provider, cron)
-    print([int(user) for user in os.environ.get("ALLOWED_USERS").split(";")])
     TgBot(service, bot, allowed_users=[int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()
