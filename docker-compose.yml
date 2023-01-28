@@ -18,14 +18,6 @@ services:
       ALLOWED_USERS: user ids seperate by semicolon
     networks:
       - public
-  client_parser_in_telegram_bot:
-    build: client_on_rent_parser_in_telegram_bot
-    environment:
-      API_ID:
-      API_HASH:
-      SEND_GROUP_ID:
-    networks:
-      - public
 
 networks:
   public:
