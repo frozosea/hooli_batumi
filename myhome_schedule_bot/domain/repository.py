@@ -17,7 +17,7 @@ class IRepository(ABC):
 
 class Repository(IRepository):
     def __init__(self):
-        self.__con = sqlite3.connect("database.sqlite")
+        self.__con = sqlite3.connect("database.db")
 
     def migrate(self):
         self.__con.cursor().execute("""CREATE TABLE IF NOT EXISTS myhome (

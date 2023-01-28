@@ -41,7 +41,7 @@ class CronManager(ICronManager):
 
     def __init__(self):
         jobstores = {
-            'default': SQLAlchemyJobStore(url='sqlite:///database.sqlite')
+            'default': SQLAlchemyJobStore(url='sqlite:///database.db')
         }
         self.__manager = AsyncIOScheduler(jobstores=jobstores)
 
