@@ -4,7 +4,7 @@ from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
 
-from myhome_schedule_bot.apartment_data_parser.entity import Appartment
+from .entity import Appartment
 
 
 class IParser(ABC):

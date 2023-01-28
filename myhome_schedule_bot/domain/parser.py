@@ -3,7 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-from myhome_schedule_bot.domain.entity import LastAppartment
+from .entity import LastAppartment
 
 
 class Parser:

@@ -22,7 +22,8 @@
 
         let number = await agent.document.querySelector('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button > div > var').textContent
         while (number.includes("*")) {
-            console.log(number)
+            await agent.querySelector('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button').$click()
+            await sleep(50)
             number = await agent.document.querySelector('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button > div > var').textContent
         }
         resolve(await agent.document.documentElement.innerHTML);

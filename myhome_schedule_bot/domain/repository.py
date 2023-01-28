@@ -3,7 +3,7 @@ from abc import ABC
 from abc import abstractmethod
 import sqlite3
 
-from myhome_schedule_bot.domain.entity import LastAppartment
+from .entity import LastAppartment
 
 
 class IRepository(ABC):

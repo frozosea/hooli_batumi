@@ -4,7 +4,7 @@ from abc import abstractmethod
 import aiogram
 from aiogram import types
 
-from myhome_schedule_bot.apartment_data_parser.entity import Appartment
+from ..apartment_data_parser.entity import Appartment
 
 
 class IDelivery(ABC):

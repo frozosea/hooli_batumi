@@ -1,7 +1,7 @@
 from typing import Type
-from myhome_schedule_bot.apartment_data_parser.entity import Appartment
-from myhome_schedule_bot.apartment_data_parser.request import IRequest
-from myhome_schedule_bot.apartment_data_parser.parser import IParser
+from .entity import Appartment
+from .request import IRequest
+from .parser import IParser
 
 
 class Provider:
