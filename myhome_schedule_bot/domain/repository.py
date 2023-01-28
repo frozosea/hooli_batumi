@@ -1,3 +1,4 @@
+import datetime
 from abc import ABC
 from abc import abstractmethod
 import sqlite3
@@ -22,19 +23,24 @@ class Repository(IRepository):
     def migrate(self):
         self.__con.cursor().execute("""CREATE TABLE IF NOT EXISTS myhome (
 	                        id integer PRIMARY KEY AUTOINCREMENT,
-	                        myhome_id integer,
-	                        add_time datetime
+	                        myhome_id integer unique,
+	                        add_time int,
+	                        url text
                             );
                         """)
 
     def add(self, obj: LastAppartment) -> None:
-        self.__con.cursor().execute('INSERT INTO myhome(myhome_id,add_time) VALUES (?,?)', (obj.Id, obj.AddDate))
-        self.__con.commit()
+        try:
+            self.__con.cursor().execute('INSERT INTO myhome(myhome_id,add_time,url) VALUES (?,?,?)',
+                                        (obj.Id, obj.AddDate.timestamp(), obj.Url))
+            self.__con.commit()
+        except Exception as e:
+            print(f"{obj.Id} already exists")
 
     def get(self, id: str) -> LastAppartment:
         cur = self.__con.cursor()
-        cur.execute('SELECT FROM myhome WHERE myhome_id = ?', (id,))
+        cur.execute('SELECT * FROM myhome WHERE myhome_id = ?', (id,))
         raw = cur.fetchone()
-        if len(raw) == 0:
+        if not raw:
             return None
-        return LastAppartment(raw[1], raw[2])
+        return LastAppartment(Id=raw[1], AddDate=datetime.datetime.fromtimestamp(raw[2]), Url=raw[3])

@@ -1,11 +1,9 @@
-import asyncio
 import logging
 import os
 
 from dotenv import load_dotenv
 from aiogram import Bot
 from myhome_schedule_bot.apartment_data_parser.request import Request
-from myhome_schedule_bot.apartment_data_parser.ua_generator import UserAgentGenerator
 from myhome_schedule_bot.apartment_data_parser.parser import Parser
 from myhome_schedule_bot.apartment_data_parser.provider import Provider as ApartmentDataParser
 
@@ -14,6 +12,7 @@ from myhome_schedule_bot.domain.request import Request as DomainRequest
 
 from myhome_schedule_bot.domain.provider import FlatProvider
 from myhome_schedule_bot.domain.repository import Repository
+from myhome_schedule_bot.domain.entity import LastAppartment
 from myhome_schedule_bot.domain.delivery import Delivery
 from myhome_schedule_bot.domain.task import TaskProvider
 from myhome_schedule_bot.domain.service import Service
