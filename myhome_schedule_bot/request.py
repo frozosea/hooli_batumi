@@ -41,5 +41,4 @@ class Request(IRequest):
         async with ClientSession() as session:
             response = await session.get(url, headers=self.headers_generator.generate())
             print(response.status)
-            # print(str(await response.text()))
             return str(await response.text())

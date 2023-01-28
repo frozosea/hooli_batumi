@@ -22,10 +22,10 @@ class Parser:
                           'июл': 'jul', 'авг': 'aug', 'сен': 'sep', 'окт': 'oct', 'ноя': 'nov', 'дек': 'dec'}
         split = date.split(" ")
         if len(split) > 1:
-            month = split[1]
+            month = split[1].lower()
             if len(re.findall(r"[а-я]", month.lower())) != 0:
-                month = replace_object[month]
-            return split[0] + " " + month + " " + split[2]
+                month = replace_object[month.split(".")[0]]
+            return split[0] + " " + month + " " + split[3]
         raise
 
     def __parse_date(self, soup: BeautifulSoup) -> datetime.datetime:
