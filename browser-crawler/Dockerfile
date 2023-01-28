@@ -1,4 +1,4 @@
-FROM node:14-slim
+FROM node:18.13-slim
 
 # Fonts as packages
 RUN echo "deb http://httpredir.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list \
@@ -44,10 +44,7 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 RUN npm install -g npm
 
 WORKDIR /app/www
-COPY ./dist /app/www/dist
-COPY ./config.json /app/www
-COPY ./package.json /app/www
-COPY ./package-lock.json /app/www
+COPY . /app/www
 
 ENV NODE_ENV production
 RUN npm config set update-notifier false; \

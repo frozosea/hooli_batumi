@@ -12,7 +12,6 @@ from myhome_schedule_bot.domain.request import Request as DomainRequest
 
 from myhome_schedule_bot.domain.provider import FlatProvider
 from myhome_schedule_bot.domain.repository import Repository
-from myhome_schedule_bot.domain.entity import LastAppartment
 from myhome_schedule_bot.domain.delivery import Delivery
 from myhome_schedule_bot.domain.task import TaskProvider
 from myhome_schedule_bot.domain.service import Service
