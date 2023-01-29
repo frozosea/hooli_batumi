@@ -8,9 +8,9 @@ from entity import LastAppartment
 
 class Parser:
     @staticmethod
-    def __parse_id(soup: BeautifulSoup) -> int:
+    def __parse_id(soup: BeautifulSoup, number: int) -> int:
         raw = soup.select_one(
-            "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1)")
+            f"#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child({number})")
         if raw:
             id = raw.attrs["data-product-id"]
             if id:
@@ -47,6 +47,6 @@ class Parser:
         except:
             return ""
 
-    def parse(self, html: str) -> LastAppartment:
+    def parse(self, html: str, number: int) -> LastAppartment:
         soup = BeautifulSoup(html, "lxml")
-        return LastAppartment(self.__parse_id(soup), self.__parse_date(soup), self.__parse_href(soup))
+        return LastAppartment(self.__parse_id(soup, number=number), self.__parse_date(soup), self.__parse_href(soup))

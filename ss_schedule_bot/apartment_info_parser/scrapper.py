@@ -97,10 +97,11 @@ class Parser(IParser):
     @staticmethod
     def __get_phone_number(soup: BeautifulSoup) -> str:
         try:
-            raw_number = soup.select_one(
-                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedRightAll > div > div > div > div.article_author_block.user_article > div > div > div.phone-flex-row.mobile-phone-row.mobile-phone-row--realEstate > div.mobile-phone-row-top > div.author_contact_info.author_contact_info_clicked > div.UserMObileNumbersBlock > a > span").text
-            number = re.sub(r"\n\t\s", '', raw_number).strip()
-            return f"+995 {number}"
+            href = soup.select_one(
+        "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedRightAll > div > div > div > div.article_author_block.user_article > div > div > div.phone-flex-row.phone-row--realEstate > div.phone-row-bottom > div > div.phone-row-bottom-item-list.phone-row-bottom-item-list--second > a").attrs[
+              "href"]
+
+            return f"+995 {href.split('/')[-1]}"
         except:
             return ""
 
