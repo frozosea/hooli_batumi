@@ -11,15 +11,10 @@ class Transport:
     def __is_forward(self, event) -> bool:
         peer = event.peer_id
         if isinstance(peer, telethon.tl.types.PeerChat):
-            return self.__compare_chat_id(self.__categories, peer.chat_id)
+            if peer.chat_id == self.__group_id:
+                return False
         if isinstance(peer, telethon.tl.types.PeerChannel):
-            return self.__compare_chat_id(self.__categories, peer.channel_id)
-        return False
-
-    @staticmethod
-    def __compare_chat_id(categories: List[Category], chat_id) -> bool:
-        for c in categories:
-            if int(c.GroupId) == int(chat_id):
+            if peer.channel_id == self.__group_id:
                 return False
         return True
 
