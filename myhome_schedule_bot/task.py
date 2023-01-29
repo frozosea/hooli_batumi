@@ -24,11 +24,17 @@ class TaskProvider:
 
     def get_task(self, start_date: datetime.datetime, url: str, **kwargs) -> Coroutine:
         async def task():
-            last_appart = await self.__provider.get_last_appartment(url)
-            appart_from_repository = self.__repository.get(last_appart.Id)
-            if not appart_from_repository and last_appart.AddDate > start_date:
-                threading.Thread(target=self.__repository.add(last_appart)).start()
-                info_about_flat = await self.__appartment_info_parser.get(last_appart.Url)
+            try:
+                last_apart = await self.__provider.get_last_appartment(url)
+            except Exception as e:
+                print(e)
+                return
+            print(last_apart)
+            apart_from_repository = self.__repository.get(last_apart.Id)
+            if not apart_from_repository:
+                threading.Thread(target=self.__repository.add(last_apart)).start()
+                info_about_flat = await self.__appartment_info_parser.get(last_apart.Url)
+                print(info_about_flat)
                 await self.__delivery.send(result=info_about_flat, **kwargs)
 
         return task

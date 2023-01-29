@@ -121,7 +121,10 @@ class Parser(IParser):
     @staticmethod
     def __get_phone_number(soup: BeautifulSoup) -> str:
         try:
-            return f"+995 {soup.select_one('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button > div > var').text}"
+            raw_number = soup.select_one(
+                '#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button > div > var').text
+            number = re.sub(r"\n\t\s", '', raw_number).strip()
+            return f"+995 {number}"
         except Exception as e:
             print(e)
             return ""

@@ -10,11 +10,12 @@ class Parser:
     @staticmethod
     def __parse_id(soup: BeautifulSoup) -> int:
         raw = soup.select_one(
-            "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1) > a > div.list-view-id-container.justify-content-center > div > span:nth-child(1)").text
-        split = raw.upper().split(" ")
-        if len(split) == 1:
-            raise
-        return int(split[1])
+            "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1)")
+        if raw:
+            id = raw.attrs["data-product-id"]
+            if id:
+                return int(id)
+        return None
 
     @staticmethod
     def __replace_moth(date: str) -> str:
@@ -29,10 +30,13 @@ class Parser:
         raise
 
     def __parse_date(self, soup: BeautifulSoup) -> datetime.datetime:
-        raw_date = soup.select_one(
-            "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1) > a > div.list-view-id-container.justify-content-center > div > span.d-block.mb-3").text
-        date = self.__replace_moth(raw_date).lower()
-        return datetime.datetime.strptime(date, "%d %b %H:%M")
+        try:
+            raw_date = soup.select_one(
+                "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1) > a > div.list-view-id-container.justify-content-center > div > span.d-block.mb-3").text
+            date = self.__replace_moth(raw_date).lower()
+            return datetime.datetime.strptime(date, "%d %b %H:%M")
+        except:
+            return datetime.datetime.now()
 
     def __parse_href(self, soup: BeautifulSoup) -> str:
         try:
