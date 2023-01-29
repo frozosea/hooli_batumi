@@ -15,6 +15,9 @@ class ChatBot:
         if isinstance(peer, telethon.tl.types.PeerChat):
             if peer.chat_id == self.__send_to_group_id:
                 return False
+        if isinstance(peer, telethon.tl.types.PeerChannel):
+            if peer.channel_id == self.__send_to_group_id:
+                return False
         return True
 
     def __check_contains_give_rent_messages(self, message):
