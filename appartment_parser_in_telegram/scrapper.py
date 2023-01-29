@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Type
 from typing import List
 
-from appartment_parser_in_telegram.entity import Category
+from entity import Category
 
 
 class INumberParser(ABC):
@@ -15,7 +15,9 @@ class INumberParser(ABC):
 
 class NumberParser(INumberParser):
     def parse(self, message: str) -> int:
-        raw = [item.group() for item in re.finditer(r"\d+\s*(долларов|\$|usd|dollar|dollars)", message)][0]
+        raw = [item.group() for item in re.finditer(
+            r"\d+\s*(долларов|\$|usd|dollar|dollars|баксов|у\.е|д\.|уе)|(долларов|\$|usd|dollar|dollars|баксов|у\.е|д\.|уе)\s*\d+",
+            message)][0]
         number = int(re.findall(r"\d{3,5}", raw)[0])
         if number > 200:
             return number
@@ -31,7 +33,7 @@ class IMessageChecker(ABC):
 class MessageChecker(IMessageChecker):
     @staticmethod
     def check_owner_contains(message: str) -> bool:
-        for word in ("собственник", "собственница", "owner", "landlord"):
+        for word in ("собственник", "собственника", "собственница","собственницы", "owner", "landlord"):
             if word in message.lower():
                 return True
         return False
@@ -63,6 +65,6 @@ class MessageParser(IMessageParser):
     def get_category(self, categories: List[Category], message: str) -> Category:
         number = self.number_parser.parse(message=message)
         for category in categories:
-            if eval(category["Eval"].format(number)):
+            if eval(category.Eval.format(number)):
                 return category
         raise

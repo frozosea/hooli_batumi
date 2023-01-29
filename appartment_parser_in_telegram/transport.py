@@ -1,12 +1,11 @@
-import logging
 from typing import List
 from typing import Type
 import telethon.tl.types
 from telethon import TelegramClient
 from telethon import events
-from .entity import Category
-from .parser import IMessageParser
-from .parser import IMessageChecker
+from entity import Category
+from scrapper import IMessageParser
+from scrapper import IMessageChecker
 
 
 class Transport:
@@ -14,6 +13,8 @@ class Transport:
         peer = event.peer_id
         if isinstance(peer, telethon.tl.types.PeerChat):
             return self.__compare_chat_id(self.__categories, peer.chat_id)
+        if isinstance(peer, telethon.tl.types.PeerChannel):
+            return self.__compare_chat_id(self.__categories,peer.channel_id)
         return False
 
     @staticmethod
@@ -46,7 +47,7 @@ class Transport:
                         category = self.__message_parser.get_category(self.__categories, message)
                         await self.__client.forward_messages(category.GroupId, event.message)
                     except Exception as e:
-                        logging.log(str(e))
+                        print(str(e))
 
     def start(self):
         self.__client.run_until_disconnected()

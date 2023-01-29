@@ -55,7 +55,7 @@ RUN npm config set update-notifier false; \
 
 RUN sh $(npx install-browser-deps)
 
-EXPOSE 8080
+EXPOSE 8010
 
 ENV SA_SHOW_REPLAY 0
 ENV SA_SHOW_BROWSER 0

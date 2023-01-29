@@ -2,16 +2,18 @@ import json
 import os
 from typing import List
 from dotenv import load_dotenv
-from .entity import Category
-from .parser import NumberParser
-from .parser import MessageChecker
-from .parser import MessageParser
-from .transport import Transport
+from entity import Category
+from scrapper import NumberParser
+from scrapper import MessageChecker
+from scrapper import MessageParser
+
+
+from transport import Transport
 
 
 def get_categories() -> List[Category]:
     with open("config.json", "r") as file:
-        return json.loads(file.read())
+        return [Category(GroupId=d["GroupId"], Eval=d["Eval"]) for d in json.loads(file.read())]
 
 
 if __name__ == '__main__':
