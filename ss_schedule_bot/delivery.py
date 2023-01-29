@@ -4,7 +4,7 @@ from abc import abstractmethod
 import aiogram
 from aiogram import types
 
-from data_parser import Apartment
+from apartment_data_parser import Apartment
 
 
 class IDelivery(ABC):
