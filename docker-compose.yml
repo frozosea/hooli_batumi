@@ -2,22 +2,11 @@ version: "3.9"
 services:
   browser_crawler:
     build: browser-crawler
+    restart: on-failure
     networks:
       - public
-  myhome_apartment_info_parser:
-    build: myhome_appartment_info_parser
-    environment:
-      BOT_TOKEN: token
-      ALLOWED_USERS: user ids seperate by semicolon
-    networks:
-      - public
-  myhome_schedule_bot:
-    build: myhome_schedule_bot
-    environment:
-      BOT_TOKEN: token
-      ALLOWED_USERS: user ids seperate by semicolon
-    networks:
-      - public
+    ports:
+      - "8010:8010"
 
 networks:
   public:

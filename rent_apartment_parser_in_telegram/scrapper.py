@@ -33,7 +33,10 @@ class IMessageChecker(ABC):
 class MessageChecker(IMessageChecker):
     @staticmethod
     def check_owner_contains(message: str) -> bool:
-        for word in ("собственник", "собственника", "собственница","собственницы", "owner", "landlord"):
+        for word in (
+                "собственник", "собственника", "собственница", "собственницы", "собственнице", "собственнику", "owner",
+                "landlord", "sobstvennik", "sobstvenik", "sobstvenic", "sobstvenica", "sobstvenicy", "sobstvenicu",
+                "sobstveniky", "sobstveniku"):
             if word in message.lower():
                 return True
         return False
