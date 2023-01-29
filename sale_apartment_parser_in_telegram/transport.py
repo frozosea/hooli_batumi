@@ -1,9 +1,7 @@
-from typing import List
 from typing import Type
 import telethon.tl.types
 from telethon import TelegramClient
 from telethon import events
-from entity import Category
 from scrapper import IMessageChecker
 
 

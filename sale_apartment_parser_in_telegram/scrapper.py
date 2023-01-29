@@ -1,10 +1,5 @@
-import re
 from abc import ABC
 from abc import abstractmethod
-from typing import Type
-from typing import List
-
-from entity import Category
 
 
 class IMessageChecker(ABC):
