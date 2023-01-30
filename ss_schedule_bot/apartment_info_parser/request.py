@@ -17,7 +17,7 @@ class Request(IRequest):
 
     @staticmethod
     def __get_script(url: str) -> str:
-        return open("script.js", "r").read() % url
+        return open("../script.js", "r").read() % url
 
     async def send(self, url: str) -> str:
         return open("/Users/frozo/PycharmProjects/dasdasd/ws.html", "r").read()

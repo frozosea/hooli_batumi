@@ -13,6 +13,7 @@ from request import Request as DomainRequest
 
 from provider import FlatProvider
 from repository import Repository
+from repository import CronRepository
 from delivery import Delivery
 from task import TaskProvider
 from service import Service
@@ -36,5 +37,6 @@ if __name__ == '__main__':
     bot = Bot(token=os.environ.get("BOT_TOKEN"))
     delivery = Delivery(bot)
     task_provider = TaskProvider(delivery, repository, flat_provider, apartment_data_parser)
-    service = Service(task_provider, cron)
+    service = Service(task_provider, cron, CronRepository().migrate())
+    service.retry_tasks()
     TgBot(service, bot, allowed_users=[int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()

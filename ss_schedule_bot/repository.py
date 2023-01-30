@@ -1,9 +1,10 @@
-import datetime
+from typing import List
 from abc import ABC
 from abc import abstractmethod
 import sqlite3
 
 from entity import LastAppartment
+from entity import AddTask
 
 
 class IRepository(ABC):
@@ -20,27 +21,66 @@ class Repository(IRepository):
     def __init__(self):
         self.__con = sqlite3.connect("database.db")
 
-    def migrate(self):
-        self.__con.cursor().execute("""CREATE TABLE IF NOT EXISTS myhome (
+    def migrate(self) -> IRepository:
+        self.__con.cursor().execute("""CREATE TABLE IF NOT EXISTS ss (
 	                        id integer PRIMARY KEY AUTOINCREMENT,
-	                        myhome_id integer unique,
-	                        add_time int,
+	                        ss_id integer unique,
 	                        url text
                             );
                         """)
+        return self
 
     def add(self, obj: LastAppartment) -> None:
         try:
-            self.__con.cursor().execute('INSERT INTO myhome(myhome_id,add_time,url) VALUES (?,?,?)',
-                                        (obj.Id, obj.AddDate.timestamp(), obj.Url))
+            self.__con.cursor().execute('INSERT INTO ss(ss_id,url) VALUES (?,?)',
+                                        (obj.Id, obj.Url,))
             self.__con.commit()
         except Exception as e:
             print(f"{obj.Id} already exists")
 
     def get(self, id: str) -> LastAppartment:
         cur = self.__con.cursor()
-        cur.execute('SELECT * FROM myhome WHERE myhome_id = ?', (id,))
+        cur.execute('SELECT * FROM ss WHERE ss_id = ?', (id,))
         raw = cur.fetchone()
         if not raw:
             return None
-        return LastAppartment(Id=raw[1], AddDate=datetime.datetime.fromtimestamp(raw[2]), Url=raw[3])
+        return LastAppartment(Id=raw[1], Url=raw[2])
+
+
+class ICronRepository(ABC):
+    @abstractmethod
+    def add_job(self, task: AddTask) -> None:
+        ...
+
+    @abstractmethod
+    def get_jobs(self) -> List[AddTask]:
+        ...
+
+
+class CronRepository(ICronRepository):
+    def __init__(self):
+        self.__con = sqlite3.connect("database.db")
+
+    def migrate(self) -> ICronRepository:
+        self.__con.cursor().execute("""CREATE TABLE IF NOT EXISTS jobs(
+                                    id integer PRIMARY KEY AUTOINCREMENT,
+                                    url text,
+                                    group_id int
+                                    );""")
+        return self
+
+    def add_job(self, task: AddTask) -> None:
+        try:
+            self.__con.cursor().execute('INSERT INTO jobs(url,group_id) VALUES (?,?)',
+                                        (task.Url, task.GroupId,))
+            self.__con.commit()
+        except Exception as e:
+            print(f"{task.GroupId} already exists")
+
+    def get_jobs(self) -> List[AddTask]:
+        cur = self.__con.cursor()
+        cur.execute('SELECT * FROM jobs')
+        all = cur.fetchall()
+        if len(all) > 0:
+            return [AddTask(Url=item[1], GroupId=item[2]) for item in all]
+        return []

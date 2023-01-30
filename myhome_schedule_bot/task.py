@@ -1,11 +1,10 @@
-import datetime
 import threading
 from typing import Type
+from typing import List
 from typing import Coroutine
 from delivery import IDelivery
 from repository import IRepository
 from provider import FlatProvider
-
 from data_parser import Provider as AppartmentInfoParser
 
 

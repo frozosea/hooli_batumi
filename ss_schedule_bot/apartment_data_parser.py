@@ -34,15 +34,18 @@ class Request(IRequest):
 
     @staticmethod
     def __get_script(url: str) -> str:
-        return open("script.js", "r").read() % url
+        data = open("script.js", "r").read()
+        return data.replace("await agent.goto('%s');", f"await agent.goto('{url}');")
 
     async def send(self, url: str) -> str:
-        return open("/Users/frozo/PycharmProjects/dasdasd/ws.html", "r").read()
-        # async with ClientSession() as session:
-        #     response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
-        #                                   data={"script": self.__get_script(url)})
-        #     j = await response.json()
-        # return j["output"]
+        # return open("/Users/frozo/PycharmProjects/dasdasd/ws.html", "r").read()
+        async with ClientSession() as session:
+            response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
+                                          data={"script": self.__get_script(url)})
+            j = await response.json()
+        with open(f"ss info from browser.html", "w") as file:
+            file.write(j["output"])
+        return j["output"]
 
 
 class IParser(ABC):
@@ -136,11 +139,18 @@ class Parser(IParser):
     @staticmethod
     def __get_phone_number(soup: BeautifulSoup) -> str:
         try:
-            href = soup.select_one(
-                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedRightAll > div > div > div > div.article_author_block.user_article > div > div > div.phone-flex-row.phone-row--realEstate > div.phone-row-bottom > div > div.phone-row-bottom-item-list.phone-row-bottom-item-list--second > a").attrs[
-                "href"]
-
-            return f"+995 {href.split('/')[-1]}"
+            tag = soup.select_one(
+                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedRightAll > div > div > div > div.article_author_block.user_article > div > div > div.phone-flex-row.phone-row--realEstate > div.phone-row-bottom > div > div.phone-row-bottom-item-list.phone-row-bottom-item-list--second > a")
+            if tag:
+                if tag.has_attr("href"):
+                    href = tag.attrs["href"]
+                    return f"+995 {href.split('/')[-1]}"
+            else:
+                number = soup.select_one(
+                    "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedRightAll > div > div > div > div.article_author_block.user_article > div > div > div.phone-flex-row.phone-row--realEstate > div.phone-row-top > div.author_contact_info2 > div.UserMObileNumbersBlock > a > span")
+                if number:
+                    return f"+995 {number.text}"
+            raise
         except:
             return ""
 
@@ -167,8 +177,7 @@ class Service:
         try:
             string_html = await self.request.send(url)
             result = self.parser.parse(string_html)
-            print(result)
             return result
         except Exception as e:
-            print(e)
+            print(f"ERROR IN APARTMENT DATA PARSER SERVICE: {e}")
             return None
