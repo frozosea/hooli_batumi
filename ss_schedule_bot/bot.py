@@ -31,29 +31,27 @@ class Bot:
         async def parse(message: types.Message):
             user_id = message.from_user.id
             if user_id in self.__allowed_users:
-                if "ss.ge" in message.text:
-                    text = message.text
-                    split = text.split("\n")
-                    j = {}
-                    if len(split) == 3:
+                text = message.text
+                split = text.split("\n")
+                j = {}
+                if len(split) == 3:
+                    try:
+                        j["command"] = split[0].split(":")[1].strip()
+                    except:
+                        await message.answer("Введите команду в правильном формате!")
+                        return
 
-                        try:
-                            j["command"] = split[0].split(":")[1].strip()
-                        except:
-                            await message.answer("Введите команду в правильном формате!")
-                            return
+                    try:
+                        j["group_id"] = int(split[1].split(":")[1].strip())
+                    except:
+                        await message.answer("Введите команду в правильном формате!")
+                        return
 
-                        try:
-                            j["group_id"] = int(split[1].split(":")[1].strip())
-                        except:
-                            await message.answer("Введите команду в правильном формате!")
-                            return
-
-                        command = j["command"]
-                        if command == "add":
-
+                    command = j["command"]
+                    if command == "add":
+                        if "ss.ge" in message.text:
                             try:
-                                j["url"] = split[2].split(":",1)[1].strip()
+                                j["url"] = split[2].split(":", 1)[1].strip()
                             except:
                                 await message.answer("Введите команду в правильном формате!")
                                 return
@@ -65,22 +63,24 @@ class Bot:
                                 print(e)
                                 await message.answer("Что-то пошло не так, задача не была добавлена...")
                                 return
-
-                        elif command == "remove":
-                            try:
-                                self.__service.remove(j["group_id"])
-                                await message.answer("Задача была удалена из бота!")
-                            except Exception as e:
-                                print(e)
-                                await message.answer("Что-то пошло не так, задача не была удалена...")
-                                return
-
                         else:
                             await message.answer("Введите команду в правильном формате!")
                             return
+                    elif command == "remove":
+                        try:
+                            self.__service.remove(j["group_id"])
+                            await message.answer("Задача была удалена из бота!")
+                        except Exception as e:
+                            print(e)
+                            await message.answer("Что-то пошло не так, задача не была удалена...")
+                            return
 
-                else:
-                    await message.answer("У вас нет доступа к данному боту, обратитесь к администратору!")
+                    else:
+                        await message.answer("Введите команду в правильном формате!")
+                        return
+
+            else:
+                await message.answer("У вас нет доступа к данному боту, обратитесь к администратору!")
 
     def run(self):
         executor.start_polling(self.__dp)
