@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import time
 from typing import Type
 from typing import List
 from typing import Coroutine
@@ -27,33 +28,35 @@ class TaskProvider:
         try:
             last_aparts = await self.__provider.get_last_appartments(url=url, max_flat_number=max_flat_number)
         except Exception as e:
+            print(e)
             return
         print(last_aparts)
-
+        time.sleep(100)
         for apart in last_aparts:
             apart_from_repository = self.__repository.get(apart.Id)
             if not apart_from_repository:
                 self.__repository.add(apart)
             info_about_flat = await self.__appartment_info_parser.get(apart.Url)
             print(info_about_flat)
+            time.sleep(100)
 
     def get_task(self, max_flat_number: int, url: str, **kwargs) -> Coroutine:
         async def task():
             try:
                 last_aparts = await self.__provider.get_last_appartments(url=url, max_flat_number=max_flat_number)
             except Exception as e:
+                print(e)
                 return
             print(last_aparts)
-
-            async def __inner(apart):
+            time.sleep(100)
+            for apart in last_aparts:
                 apart_from_repository = self.__repository.get(apart.Id)
                 if not apart_from_repository:
-                    threading.Thread(target=self.__repository.add(apart)).start()
+                    self.__repository.add(apart)
                 info_about_flat = await self.__appartment_info_parser.get(apart.Url)
                 print(info_about_flat)
-                # await self.__delivery.send(result=info_about_flat, **kwargs)
-
-            asyncio.gather(*[__inner(last_apart) for last_apart in last_aparts])
+                await self.__delivery.send(result=info_about_flat, **kwargs)
+                time.sleep(100)
 
         return task
 

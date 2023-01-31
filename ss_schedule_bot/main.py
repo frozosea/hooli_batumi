@@ -41,7 +41,7 @@ if __name__ == '__main__':
     #     url="https://ss.ge/ru/недвижимость/l/Квартира/Продается?MunicipalityId=95&CityIdList=95&subdistr=44%2C45%2C46%2C47%2C48%2C49%2C50%2C27%2C26%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C13%2C24%2C14%2C15%2C16%2C17%2C18%2C19%2C32%2C33%2C34%2C35%2C36%2C37%2C53%2C38%2C39%2C40%2C41%2C42%2C43%2C1%2C28%2C29%2C30%2C31%2C20%2C21%2C22%2C23%2C51%2C52&PriceType=false&CurrencyId=1",
     #     group_id=123)
     asyncio.get_event_loop().run_until_complete(task_provider.task(max_flat_number=4,
-                                   url="https://ss.ge/ru/недвижимость/l/Квартира/Продается?MunicipalityId=95&CityIdList=95&subdistr=44%2C45%2C46%2C47%2C48%2C49%2C50%2C27%2C26%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C13%2C24%2C14%2C15%2C16%2C17%2C18%2C19%2C32%2C33%2C34%2C35%2C36%2C37%2C53%2C38%2C39%2C40%2C41%2C42%2C43%2C1%2C28%2C29%2C30%2C31%2C20%2C21%2C22%2C23%2C51%2C52&PriceType=false&CurrencyId=1",
+                                   url="https://ss.ge/ru/%D0%BD%D0%B5%D0%B4%D0%B2%D0%B8%D0%B6%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C/l/%D0%9A%D0%B2%D0%B0%D1%80%D1%82%D0%B8%D1%80%D0%B0/%D0%9F%D1%80%D0%BE%D0%B4%D0%B0%D0%B5%D1%82%D1%81%D1%8F?CityIdList=100&PriceType=false",
                                    ))
     # asyncio.get_event_loop().run_forever()
     # TgBot(service, bot, allowed_users=[int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()

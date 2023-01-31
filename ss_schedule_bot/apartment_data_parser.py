@@ -6,6 +6,7 @@ from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
+from repository import IProxyRepository
 
 
 @dataclass()
@@ -22,7 +23,7 @@ class Apartment:
 
 class IRequest(ABC):
     @abstractmethod
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         ...
 
 
@@ -37,15 +38,10 @@ class Request(IRequest):
         data = open("script.js", "r").read()
         return data.replace("await agent.goto('%s');", f"await agent.goto('{url}');")
 
-    async def send(self, url: str) -> str:
-        # return open("/Users/frozo/PycharmProjects/dasdasd/ws.html", "r").read()
+    async def send(self, url: str, proxy: str) -> str:
         async with ClientSession() as session:
-            response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
-                                          data={"script": self.__get_script(url)})
-            j = await response.json()
-        with open(f"ss info from browser.html", "w") as file:
-            file.write(j["output"])
-        return j["output"]
+            response = await session.get(url, proxy=proxy)
+        return await response.text()
 
 
 class IParser(ABC):
@@ -169,13 +165,14 @@ class Parser(IParser):
 
 
 class Service:
-    def __init__(self, request: Type[IRequest], parser: Type[IParser]):
+    def __init__(self, request: Type[IRequest], parser: Type[IParser], proxy_repository: Type[IProxyRepository]):
         self.request = request
         self.parser = parser
+        self.__proxy_repository = proxy_repository
 
     async def get(self, url: str) -> Apartment:
         try:
-            string_html = await self.request.send(url)
+            string_html = await self.request.send(url, self.__proxy_repository.get())
             result = self.parser.parse(string_html)
             return result
         except Exception as e:

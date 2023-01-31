@@ -1,6 +1,7 @@
 import datetime
 import re
 
+import requests
 from bs4 import BeautifulSoup
 
 from entity import LastAppartment
@@ -28,3 +29,10 @@ class Parser:
     def parse(self, html: str, number: int) -> LastAppartment:
         soup = BeautifulSoup(html, "lxml")
         return LastAppartment(self.__parse_id(soup=soup, number=number), self.__parse_href(soup=soup, number=number))
+
+
+if __name__ == '__main__':
+    response = requests.get("https://ss.ge/ru/недвижимость/l/Квартира/Продается/?MunicipalityId=&CityIdList=95",
+                            proxies={"http": "http://i20072004:eovSNU7Cp4@5.133.163.79:51523"}).text
+    for i in range(5,15):
+        print(Parser().parse(response,i))
