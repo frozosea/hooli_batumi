@@ -42,11 +42,8 @@ class Request(IRequest):
 
     async def send(self, url: str, proxy: str) -> str:
         async with ClientSession() as session:
-            response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
-                                          data=json.dumps({"script": self.__get_script(url),
-                                                           "options": {"upstreamProxyUrl": proxy}}))
-            j = await response.json()
-        return j["output"]
+            response = await session.get(url, proxy=proxy)
+        return await response.text()
 
 
 class IParser(ABC):

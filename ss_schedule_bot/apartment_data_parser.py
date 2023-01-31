@@ -1,4 +1,6 @@
 import re
+import requests
+import json
 from dataclasses import dataclass
 from typing import List
 from typing import Type
@@ -41,9 +43,30 @@ class Request(IRequest):
         return data.replace("await agent.goto('%s');", f"await agent.goto('{url}');")
 
     async def send(self, url: str, proxy: str) -> str:
-        async with ClientSession() as session:
-            response = await session.get(url, proxy=proxy)
-        return await response.text()
+        payload = json.dumps({
+            "options": {
+                "upstreamProxyUrl": proxy
+            },
+            "script": self.__get_script(url)
+        })
+        headers = {
+            'Authorization': self.__auth_password,
+            'Content-Type': 'application/json'
+        }
+        try:
+            response = requests.get(url, proxies={"socks": proxy})
+            if response.status_code > 220:
+                raise
+            return response.text
+        except Exception as e:
+            print(e)
+            async with ClientSession() as session:
+                response = await session.post(f"{self.__browser_url}/task", headers=headers, data=payload, )
+                j = await response.json()
+                task_status = j["status"]
+                if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or "BAD_ARGS":
+                    raise
+                return j["output"]
 
 
 class IParser(ABC):
