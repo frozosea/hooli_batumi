@@ -59,6 +59,3 @@ class TaskProvider:
                 time.sleep(100)
 
         return task
-
-    def get_all_jobs(self) -> List[AddTask]:
-        return self.__repository.get_jobs()

@@ -1,4 +1,5 @@
 import dataclasses
+import json
 from typing import Type
 from aiohttp import ClientSession
 import re
@@ -6,6 +7,7 @@ from abc import ABC
 from abc import abstractmethod
 from bs4 import BeautifulSoup
 from typing import List
+from repository import IProxyRepository
 
 
 @dataclasses.dataclass()
@@ -24,7 +26,7 @@ class Apartment:
 
 class IRequest(ABC):
     @abstractmethod
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         ...
 
 
@@ -38,10 +40,11 @@ class Request(IRequest):
     def __get_script(url: str) -> str:
         return open("script.js", "r").read() % url
 
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         async with ClientSession() as session:
             response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
-                                          data={"script": self.__get_script(url)})
+                                          data=json.dumps({"script": self.__get_script(url),
+                                                           "options": {"upstreamProxyUrl": proxy}}))
             j = await response.json()
         return j["output"]
 
@@ -146,13 +149,14 @@ class Parser(IParser):
 
 
 class Provider:
-    def __init__(self, request: Type[IRequest], parser: Type[IParser]):
+    def __init__(self, request: Type[IRequest], parser: Type[IParser], proxy_repository: Type[IProxyRepository]):
         self.__req = request
         self.__parser = parser
+        self.__proxy_repository = proxy_repository
 
     async def get(self, url: str) -> Apartment:
         try:
-            string_html = await self.__req.send(url)
+            string_html = await self.__req.send(url, self.__proxy_repository.get())
             return self.__parser.parse(url=url, string_html=string_html)
         except Exception as e:
             print(e)

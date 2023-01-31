@@ -14,15 +14,13 @@ class FlatProvider:
         self.__parser = Parser()
 
     async def get_last_appartments(self, max_flat_number: int, url: str) -> List[LastAppartment]:
-        async def __inner(number: int):
-            html = await self.__req.send(url)
-            return self.__parser.parse(html=html, number=number)
-
+        html = await self.__req.send(url)
         l = []
         for i in range(1, max_flat_number):
             try:
-                result = await __inner(i)
+                result = self.__parser.parse(html, i)
                 l.append(result)
-            except:
+            except Exception as e:
+                print(e)
                 continue
         return l
