@@ -13,12 +13,14 @@ from repository import IProxyRepository
 class Apartment:
     Images: List[str]
     Address: str
+    Description: str
     BedroomQuantity: int
     RoomQuantity: int
     UsdPrice: float
     Floor: str
     Square: int
     PhoneNumber: str
+    Url: str
 
 
 class IRequest(ABC):
@@ -46,7 +48,7 @@ class Request(IRequest):
 
 class IParser(ABC):
     @abstractmethod
-    def parse(self, string_html: str) -> Apartment:
+    def parse(self, string_html: str, url: str) -> Apartment:
         ...
 
 
@@ -55,7 +57,12 @@ class Parser(IParser):
     def __get_images(soup: BeautifulSoup) -> List[str]:
         # DONE
         try:
-            return [item.findChildren('img')[0].attrs["src"] for item in soup.find_all(class_="OrdinaryContainer")]
+            tags = soup.find_all(class_="OrdinaryContainer")
+            if tags:
+                return [item.findChildren('img')[0].attrs["src"] for item in tags]
+            else:
+                return [item.findChildren('img')[0].attrs["src"] for item in
+                        soup.find_all("div", class_="veri-slider-img-sm")]
         except:
             return []
 
@@ -128,7 +135,8 @@ class Parser(IParser):
     @staticmethod
     def __get_description(soup: BeautifulSoup) -> str:
         try:
-            return re.sub('[\t\n]+', '', soup.find(class_="pr-comment translated").text)
+            return re.sub('[\t\n\r-]+', '', soup.select_one(
+                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedPageAllBodyBLock > div > div.article_item_desc > div.translate_block > div > span.details_text").text)
         except:
             return ""
 
@@ -150,7 +158,7 @@ class Parser(IParser):
         except:
             return ""
 
-    def parse(self, string_html: str) -> Apartment:
+    def parse(self, string_html: str, url: str) -> Apartment:
         soup = BeautifulSoup(string_html, "lxml")
         return Apartment(
             Images=self.__get_images(soup),
@@ -161,6 +169,8 @@ class Parser(IParser):
             RoomQuantity=self.__get_room_quantity(soup),
             Square=self.__get_square(soup),
             PhoneNumber=self.__get_phone_number(soup),
+            Description=self.__get_description(soup),
+            Url=url
         )
 
 
@@ -173,7 +183,7 @@ class Service:
     async def get(self, url: str) -> Apartment:
         try:
             string_html = await self.request.send(url, self.__proxy_repository.get())
-            result = self.parser.parse(string_html)
+            result = self.parser.parse(string_html=string_html, url=url)
             return result
         except Exception as e:
             print(f"ERROR IN APARTMENT DATA PARSER SERVICE: {e}")

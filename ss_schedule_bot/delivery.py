@@ -20,7 +20,7 @@ class Delivery(IDelivery):
 
     @staticmethod
     def __generate_messsage(r: Apartment):
-        return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$/{r.LariPrice if r.LariPrice else 0}₾\n\nАдрес: {r.Address} {("," + r.Floor) if r.Floor else ""}\n\nДополнительно: {", ".join(r.Benefits)} \n\n Url: {r.Url} \nНомер телефона: {r.PhoneNumber}"""
+        return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$\n\nАдрес: {r.Address} {("," + r.Floor) if r.Floor else ""}\nКоличество спальней: {r.BedroomQuantity} \nКоличество комнат: {r.RoomQuantity} \n Url: {r.Url} \nНомер телефона: {r.PhoneNumber}"""
 
     async def send(self, result: Apartment, **kwargs) -> None:
         media = types.MediaGroup()
