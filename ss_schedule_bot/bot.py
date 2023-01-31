@@ -31,7 +31,7 @@ class Bot:
         async def parse(message: types.Message):
             user_id = message.from_user.id
             if user_id in self.__allowed_users:
-                if "https://www.myhome.ge" in message.text:
+                if "ss.ge" in message.text:
                     text = message.text
                     split = text.split("\n")
                     j = {}
