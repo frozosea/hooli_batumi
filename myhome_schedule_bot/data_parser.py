@@ -41,9 +41,24 @@ class Request(IRequest):
         return open("script.js", "r").read() % url
 
     async def send(self, url: str, proxy: str) -> str:
+        payload = json.dumps({
+            "options": {
+                "upstreamProxyUrl": proxy
+            },
+            "script": self.__get_script(url)
+        })
+        headers = {
+            'Authorization': self.__auth_password,
+            'Content-Type': 'application/json'
+        }
         async with ClientSession() as session:
-            response = await session.get(url, proxy=proxy)
-        return await response.text()
+            response = await session.post(f"{self.__browser_url}/task", headers=headers,
+                                          data=payload)
+            j = await response.json()
+            task_status = j["status"]
+            if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or "BAD_ARGS":
+                raise
+            return j["output"]
 
 
 class IParser(ABC):

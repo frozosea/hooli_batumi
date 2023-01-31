@@ -38,7 +38,7 @@ if __name__ == '__main__':
     bot = Bot(token=os.environ.get("BOT_TOKEN"))
     delivery = Delivery(bot)
     task_provider = TaskProvider(delivery, Repository().migrate(), flat_provider, apartment_data_parser)
-    if bool(os.environ.get("TEST")):
+    if int(os.environ.get("TEST")) == 1:
         asyncio.get_event_loop().run_until_complete(task_provider.task(max_flat_number=4,
                                                                        url="https://ss.ge/ru/недвижимость/l/Квартира/Продается/?MunicipalityId=&CityIdList=95",
                                                                        ))
