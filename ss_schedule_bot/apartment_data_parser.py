@@ -159,7 +159,7 @@ class Parser(IParser):
     def __get_description(soup: BeautifulSoup) -> str:
         try:
             return re.sub('[\t\n\r-]+', '', soup.select_one(
-                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedPageAllBodyBLock > div > div.article_item_desc > div.translate_block > div > span.details_text").text)
+                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedPageAllBodyBLock > div > div.article_item_desc > div.translate_block > div > span.details_text").text)[:3500]
         except:
             return ""
 
