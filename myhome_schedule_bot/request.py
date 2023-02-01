@@ -44,8 +44,19 @@ class Request(IRequest):
 
     async def send(self, url: str, proxy: str) -> str:
         payload = json.dumps({
-            "options": {
-                "upstreamProxyUrl": proxy
+             "options": {
+                "timezoneId": "Asia/Tbilisi",
+                "viewport": {
+                    "width": 1920,
+                    "height": 1080,
+                    "deviceScaleFactor": 1
+                },
+                "geolocation": {
+                    "latitude": 41.6941,
+                    "longitude": 44.8337,
+                    "accuracy": 45
+                },
+                "blockedResourceTypes": ["BlockCssAssets", "BlockImages", "BlockFonts", "BlockIcons", "BlockMedia"]
             },
             "script": self.__get_script(url)
         })
