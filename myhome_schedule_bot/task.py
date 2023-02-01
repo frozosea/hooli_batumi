@@ -81,24 +81,26 @@ class TaskProvider:
             print(info_about_flat)
             time.sleep(100)
 
-    def get_task(self, max_flat_number: int, url: str, **kwargs) -> Coroutine:
+    def get_task(self, max_flat_number: int, url: str, proxy: str = None, **kwargs) -> Coroutine:
         async def task():
             try:
-                last_aparts = await self.__provider.get_last_appartments(url=url, max_flat_number=max_flat_number)
+                last_aparts = await self.__provider.get_last_appartments(url=url, max_flat_number=max_flat_number,
+                                                                         proxy=proxy)
             except Exception as e:
                 print(e)
                 return
-            print(last_aparts)
             time.sleep(100)
             for apart in last_aparts:
                 apart_from_repository = self.__repository.get(apart.Id)
                 if not apart_from_repository:
-                    self.__repository.add(apart)
-                info_about_flat = await self.__appartment_info_parser.get(apart.Url)
-                print(info_about_flat)
-                await self.__delivery.send(result=info_about_flat, **kwargs)
-                time.sleep(100)
+                    try:
+                        self.__repository.add(apart)
+                        info_about_flat = await self.__appartment_info_parser.get(apart.Url, proxy=proxy)
+                        await self.__delivery.send(result=info_about_flat, **kwargs)
+                        time.sleep(100)
+                    except Exception as e:
+                        print(e)
+                        time.sleep(90)
+                        continue
 
         return task
-
-

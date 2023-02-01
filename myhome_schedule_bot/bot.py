@@ -20,8 +20,9 @@ class Bot:
                     Command: add/remove 
                     GroupId: айди беседы, куда присылать сообщения с квартирами
                     Url: ссылка (должная уже содержать в себе все фильтры)
+                    Proxy: прокси
                     
-                    Если команда на удаление, то поле Url не нужно, достаточно двух первых.
+                    Если команда на удаление, то поле Url,Proxy не нужно, достаточно двух первых.
                     
                     Этот бот принадлежит Hooli real estate inc. 
                     Если Вы не являетесь сотрудником нашей компании, пожалуйста, не пользуйтесь этим ботом. Спасибо!
@@ -34,7 +35,7 @@ class Bot:
                 text = message.text
                 split = text.split("\n")
                 j = {}
-                if len(split) == 3:
+                if len(split) == 4:
 
                     try:
                         j["command"] = split[0].split(":")[1].strip()
@@ -56,9 +57,12 @@ class Bot:
                             except:
                                 await message.answer("Введите команду в правильном формате!")
                                 return
-
                             try:
-                                self.__service.add(group_id=j["group_id"], url=j["url"])
+                                j["proxy"] = split[3].split(":", 1)[1].strip()
+                            except:
+                                ...
+                            try:
+                                self.__service.add(group_id=j["group_id"], url=j["url"],proxy=j["proxy"])
                                 await message.answer("Задача была добавлена в бота!")
                             except Exception as e:
                                 print(e)

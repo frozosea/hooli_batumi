@@ -44,7 +44,13 @@ class Request(IRequest):
 
     async def send(self, url: str, proxy: str) -> str:
         payload = json.dumps({
-             "options": {
+            "options": {
+                "upstreamProxyUrl": proxy,
+                "upstreamProxyIpMask": {
+                    "ipLookupService": "api.ipify.org",
+                    "proxyIp": "185.127.165.192",
+                    "publicIp": "146.190.124.200"
+                },
                 "timezoneId": "Asia/Tbilisi",
                 "viewport": {
                     "width": 1920,
@@ -56,7 +62,8 @@ class Request(IRequest):
                     "longitude": 44.8337,
                     "accuracy": 45
                 },
-                "blockedResourceTypes": ["BlockCssAssets", "BlockImages", "BlockFonts", "BlockIcons", "BlockMedia"]
+                "blockedResourceTypes": ["BlockCssAssets", "BlockImages", "BlockFonts", "BlockIcons", "BlockMedia"],
+                "locale": "ru-GE"
             },
             "script": self.__get_script(url)
         })
@@ -69,6 +76,6 @@ class Request(IRequest):
                                           data=payload)
             j = await response.json()
             task_status = j["status"]
-            if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or "BAD_ARGS":
-                raise
+            if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or task_status =="BAD_ARGS":
+                raise Exception(f"WRONG TASK STATUS IN GET CATALOGUE: {task_status}")
             return j["output"]

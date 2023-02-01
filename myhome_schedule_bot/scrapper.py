@@ -18,7 +18,7 @@ class Parser:
         return None
 
     @staticmethod
-    def __replace_moth(date: str) -> str:
+    def __replace_month(date: str) -> str:
         replace_object = {'янв': 'jan', 'фев': 'feb', 'мар': 'mar', 'апр': 'apr', 'май': 'may', 'июн': 'jun',
                           'июл': 'jul', 'авг': 'aug', 'сен': 'sep', 'окт': 'oct', 'ноя': 'nov', 'дек': 'dec'}
         split = date.split(" ")
@@ -33,15 +33,15 @@ class Parser:
         try:
             raw_date = soup.select_one(
                 "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1) > a > div.list-view-id-container.justify-content-center > div > span.d-block.mb-3").text
-            date = self.__replace_moth(raw_date).lower()
+            date = self.__replace_month(raw_date).lower()
             return datetime.datetime.strptime(date, "%d %b %H:%M")
         except:
             return datetime.datetime.now()
 
-    def __parse_href(self, soup: BeautifulSoup) -> str:
+    def __parse_href(self, soup: BeautifulSoup, number: int) -> str:
         try:
             tag = soup.select_one(
-                "#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child(1) > a")
+                f"#main_block > div.d-flex.justify-content-between.p-relative.search-content.has-map > div.search-wrap > div.search-contents.ml-0 > div > div:nth-child({number}) > a")
             if tag.has_attr("href"):
                 return tag.attrs["href"]
         except:
@@ -49,4 +49,5 @@ class Parser:
 
     def parse(self, html: str, number: int) -> LastAppartment:
         soup = BeautifulSoup(html, "lxml")
-        return LastAppartment(self.__parse_id(soup, number=number), self.__parse_date(soup), self.__parse_href(soup))
+        return LastAppartment(self.__parse_id(soup, number=number), self.__parse_date(soup),
+                              self.__parse_href(soup, number))

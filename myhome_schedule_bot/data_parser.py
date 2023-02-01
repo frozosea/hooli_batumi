@@ -38,11 +38,17 @@ class Request(IRequest):
 
     @staticmethod
     def __get_script(url: str) -> str:
-        return open("script.js", "r").read() % url
+        return open("script.js", "r").read().replace("\n", "") % url
 
     async def send(self, url: str, proxy: str) -> str:
         payload = json.dumps({
             "options": {
+                "upstreamProxyUrl": proxy,
+                "upstreamProxyIpMask": {
+                    "ipLookupService": "api.ipify.org",
+                    "proxyIp": "185.127.165.192",
+                    "publicIp": "146.190.124.200"
+                },
                 "timezoneId": "Asia/Tbilisi",
                 "viewport": {
                     "width": 1920,
@@ -54,7 +60,8 @@ class Request(IRequest):
                     "longitude": 44.8337,
                     "accuracy": 45
                 },
-                "blockedResourceTypes": ["BlockCssAssets", "BlockImages", "BlockFonts", "BlockIcons", "BlockMedia"]
+                "blockedResourceTypes": ["BlockCssAssets", "BlockImages", "BlockFonts", "BlockIcons", "BlockMedia"],
+                "locale": "ru-GE"
             },
             "script": self.__get_script(url)
         })
@@ -67,8 +74,8 @@ class Request(IRequest):
                                           data=payload)
             j = await response.json()
             task_status = j["status"]
-            if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or "BAD_ARGS":
-                raise
+            if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or task_status == "BAD_ARGS":
+                raise Exception(f"WRONG TASK STATUS IN GET APARTMENT INFO: {task_status}")
             return j["output"]
 
 
@@ -113,10 +120,13 @@ class Parser(IParser):
 
     @staticmethod
     def __get_square(soup: BeautifulSoup) -> float:
-        raw = soup.select_one(
-            "#main_block > div.detail-page > div.main-features.row.no-gutters > div:nth-child(1) > div > span:nth-child(1)")
-        str_square = raw.text.split(" ")[0]
-        return str_square
+        try:
+            raw = soup.select_one(
+                "#main_block > div.detail-page > div.main-features.row.no-gutters > div:nth-child(1) > div > span:nth-child(1)")
+            str_square = raw.text.split(" ")[0]
+            return str_square
+        except:
+            return 0
 
     @staticmethod
     def __get_floor(soup: BeautifulSoup) -> str:
@@ -177,9 +187,9 @@ class Provider:
         self.__parser = parser
         self.__proxy_repository = proxy_repository
 
-    async def get(self, url: str) -> Apartment:
+    async def get(self, url: str, proxy: str = None) -> Apartment:
         try:
-            string_html = await self.__req.send(url, self.__proxy_repository.get())
+            string_html = await self.__req.send(url, proxy if proxy else self.__proxy_repository.get())
             return self.__parser.parse(url=url, string_html=string_html)
         except Exception as e:
             print(e)

@@ -23,6 +23,7 @@
             await sleep(700);
         }
         let number = await agent.document.querySelector('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button > div > var').textContent;
+        console.log(number);
         while (number.includes('*')) {
             await agent.querySelector('#main_block > div.detail-page > div.statement-author.align-items-center.flex-wrap > button').$click();
             await sleep(1000);

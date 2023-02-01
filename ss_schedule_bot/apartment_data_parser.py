@@ -159,7 +159,8 @@ class Parser(IParser):
     def __get_description(soup: BeautifulSoup) -> str:
         try:
             return re.sub('[\t\n\r-]+', '', soup.select_one(
-                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedPageAllBodyBLock > div > div.article_item_desc > div.translate_block > div > span.details_text").text)[:3500]
+                "#main-body > div.all_page_blocks > div.container.realestateDtlSlider > div.col-md-9.col-xs-9.DetailedMd9 > div:nth-child(1) > div.DetailedPageAllBodyBLock > div > div.article_item_desc > div.translate_block > div > span.details_text").text)[
+                   :3500]
         except:
             return ""
 
@@ -203,9 +204,9 @@ class Service:
         self.parser = parser
         self.__proxy_repository = proxy_repository
 
-    async def get(self, url: str) -> Apartment:
+    async def get(self, url: str, proxy: str = None) -> Apartment:
         try:
-            string_html = await self.request.send(url, self.__proxy_repository.get())
+            string_html = await self.request.send(url, proxy if proxy else self.__proxy_repository.get())
             result = self.parser.parse(string_html=string_html, url=url)
             return result
         except Exception as e:

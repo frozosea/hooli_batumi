@@ -31,6 +31,8 @@ class Repository(IRepository):
 	                        url text
                             );
                         """)
+        self.__con.commit()
+        return self
 
     def add(self, obj: LastAppartment) -> None:
         try:
