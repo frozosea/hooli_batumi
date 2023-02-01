@@ -66,7 +66,7 @@ class Parser(IParser):
 
     def get_description(self, soup: BeautifulSoup) -> str:
         try:
-            return re.sub('[\t\n]+', '', soup.find(class_="pr-comment translated").text)
+            return re.sub('[\t\n]+', '', soup.find(class_="pr-comment translated").text)[:3500]
         except:
             return ""
 
