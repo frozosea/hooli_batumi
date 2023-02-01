@@ -1,10 +1,11 @@
 from abc import ABC
 from abc import abstractmethod
+from aiohttp import ClientSession
 
 
 class IRequest(ABC):
     @abstractmethod
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         ...
 
 
@@ -39,9 +40,7 @@ class Request:
         resolve(await agent.document.documentElement.innerHTML);
 })();""" % url
 
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         async with ClientSession() as session:
-            response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
-                                          data={"script": self.__get_script(url)})
-            j = await response.json()
-        return j["output"]
+            response = await session.get(url, proxy=proxy)
+        return await response.text()

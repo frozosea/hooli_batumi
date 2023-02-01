@@ -17,7 +17,12 @@ class Parser(IParser):
     def __get_images(soup: BeautifulSoup) -> List[str]:
         # DONE
         try:
-            return [item.findChildren('img')[0].attrs["src"] for item in soup.find_all(class_="OrdinaryContainer")]
+            tags = soup.find_all(class_="OrdinaryContainer")
+            if tags:
+                return [item.findChildren('img')[0].attrs["src"] for item in tags]
+            else:
+                return [item.findChildren('img')[0].attrs["src"] for item in
+                        soup.find_all("div", class_="veri-slider-img-sm")]
         except:
             return []
 

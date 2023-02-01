@@ -5,7 +5,7 @@ from aiohttp import ClientSession
 
 class IRequest(ABC):
     @abstractmethod
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         ...
 
 
@@ -16,12 +16,10 @@ class Request(IRequest):
         self.__auth_password = auth_password
 
     @staticmethod
-    def __get_script(url: str) -> str:
+    def __get_script(url: str, ) -> str:
         return open("script.js", "r").read() % url
 
-    async def send(self, url: str) -> str:
+    async def send(self, url: str, proxy: str) -> str:
         async with ClientSession() as session:
-            response = await session.post(f"{self.__browser_url}/task", headers={"Authorization": self.__auth_password},
-                                          data={"script": self.__get_script(url)})
-            j = await response.json()
-        return j["output"]
+            response = await session.get(url, proxy=proxy)
+        return await response.text()
