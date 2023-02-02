@@ -16,7 +16,8 @@ if __name__ == '__main__':
     allowed_users = [int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]
     USE_BROWSER = int(os.environ.get("USE_BROWSER"))
     if USE_BROWSER == 1:
-        request = BrowserRequest(os.environ.get("BROWSER_URL", os.environ.get("AUTH_PASSWORD")))
+        request = BrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD"),
+                                 os.environ.get("MACHINE_IP"))
     else:
         requests = SimpleRequest()
     parser = Parser()

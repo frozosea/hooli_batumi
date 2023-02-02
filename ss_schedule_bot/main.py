@@ -28,6 +28,11 @@ if __name__ == '__main__':
         load_dotenv()
     except Exception:
         print("No .env file")
+
+    proxies = os.environ.get("PROXIES")
+    if not proxies:
+        proxies = ""
+
     proxy_repo = ProxyRepository([proxy for proxy in os.environ.get("PROXIES").split(";")])
     cron = CronManager()
     cron.start()
@@ -35,10 +40,10 @@ if __name__ == '__main__':
     USE_BROWSER = int(os.environ.get("USE_BROWSER"))
     if USE_BROWSER == 1:
         apartment_data_parser = ApartmentDataParser(
-            BrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD")), Parser(),
+            BrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD"),os.environ.get("MACHINE_IP")), Parser(),
             proxy_repo)
         flat_provider = FlatProvider(
-            DomainBrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD")),
+            DomainBrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD"),os.environ.get("MACHINE_IP")),
             proxy_repo)
     else:
         apartment_data_parser = ApartmentDataParser(

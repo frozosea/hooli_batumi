@@ -1,4 +1,5 @@
 import json
+import re
 from abc import ABC
 from abc import abstractmethod
 
@@ -14,9 +15,10 @@ class IRequest(ABC):
 
 class BrowserRequest(IRequest):
 
-    def __init__(self, browser_url: str, auth_password: str):
+    def __init__(self, browser_url: str, auth_password: str, machine_ip: str = None):
         self.__browser_url = browser_url
         self.__auth_password = auth_password
+        self.__machine_ip = machine_ip
 
     @staticmethod
     def __get_script(url: str) -> str:
@@ -47,12 +49,33 @@ class BrowserRequest(IRequest):
 })();""" % url
 
     async def send(self, url: str, proxy: str) -> str:
-        payload = json.dumps({
+        p = {
             "options": {
-                "upstreamProxyUrl": proxy
+                "timezoneId": "Asia/Tbilisi",
+                "viewport": {
+                    "width": 1920,
+                    "height": 1080,
+                    "deviceScaleFactor": 1
+                },
+                "geolocation": {
+                    "latitude": 41.6941,
+                    "longitude": 44.8337,
+                    "accuracy": 45
+                },
+                "blockedResourceTypes": ["BlockCssAssets", "BlockImages", "BlockFonts", "BlockIcons", "BlockMedia"],
+                "locale": "ru-GE"
             },
             "script": self.__get_script(url)
-        })
+        }
+        if proxy:
+            p["options"]["upstreamProxyUrl"] = proxy
+            if self.__machine_ip:
+                p["options"]["upstreamProxyIpMask"] = {
+                    "ipLookupService": "api.ipify.org",
+                    "proxyIp": re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", proxy)[0],
+                    "publicIp": self.__machine_ip
+                }
+        payload = json.dumps(p)
         headers = {
             'Authorization': self.__auth_password,
             'Content-Type': 'application/json'
@@ -71,6 +94,7 @@ class BrowserRequest(IRequest):
                 if task_status == "FAILED" or task_status == "INIT_ERROR" or task_status == "TIMEOUT" or "BAD_ARGS":
                     raise
                 return j["output"]
+
 
 class SimpleRequest(IRequest):
     async def send(self, url: str, proxy: str) -> str:
