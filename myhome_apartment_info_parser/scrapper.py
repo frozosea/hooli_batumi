@@ -42,10 +42,13 @@ class Parser(IParser):
             return ""
 
     def get_square(self, soup: BeautifulSoup) -> float:
-        raw = soup.select_one(
-            "#main_block > div.detail-page > div.main-features.row.no-gutters > div:nth-child(1) > div > span:nth-child(1)")
-        str_square = raw.text.split(" ")[0]
-        return str_square
+        try:
+            raw = soup.select_one(
+                "#main_block > div.detail-page > div.main-features.row.no-gutters > div:nth-child(1) > div > span:nth-child(1)")
+            str_square = raw.text.split(" ")[0]
+            return str_square
+        except:
+            return 0
 
     def get_floor(self, soup: BeautifulSoup) -> str:
         try:
@@ -66,7 +69,7 @@ class Parser(IParser):
 
     def get_description(self, soup: BeautifulSoup) -> str:
         try:
-            return re.sub('[\t\n]+', '', soup.find(class_="pr-comment translated").text)[:3500]
+            return re.sub('[\t\n]+', '', soup.find(class_="pr-comment translated").text)
         except:
             return ""
 

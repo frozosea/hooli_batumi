@@ -2,8 +2,8 @@ import json
 import re
 from abc import ABC
 from abc import abstractmethod
+import requests
 
-import aiohttp_socks
 from aiohttp import ClientSession
 
 
@@ -89,17 +89,30 @@ class BrowserRequest:
 
 class SimpleRequest(IRequest):
     async def send(self, url: str, proxy: str) -> str:
+        headers = {
+            'authority': 'www.myhome.ge',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,zh-TW;q=0.6,zh-CN;q=0.5,zh;q=0.4',
+            'cache-control': 'max-age=0',
+            'referer': 'https://www.myhome.ge/ru/',
+            'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+        }
         if proxy:
-            if "socks" in proxy:
-                connector = aiohttp_socks.ProxyConnector.from_url(proxy)
-                async with ClientSession(connector=connector) as session:
-                    response = await session.get(url, proxy=proxy)
-            elif "http" in proxy or "https" in proxy:
-                async with ClientSession() as session:
-                    response = await session.get(url, proxy=proxy)
+            if "http" in proxy:
+                response = requests.get(url,headers=headers,proxies={"http": proxy})
+            elif "https" in proxy:
+                response = requests.get(url, headers=headers, proxies={"https": proxy})
             else:
                 raise Exception("wrong proxy url")
         else:
-            async with ClientSession() as session:
-                response = await session.get(url)
-        return await response.text()
+            response = requests.get(url,headers=headers)
+        print(response.status_code)
+        return response.text
