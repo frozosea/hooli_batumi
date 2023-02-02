@@ -89,6 +89,7 @@ class TaskProvider:
             except Exception as e:
                 print(e)
                 return
+            print(last_aparts)
             time.sleep(100)
             for apart in last_aparts:
                 apart_from_repository = self.__repository.get(apart.Id)

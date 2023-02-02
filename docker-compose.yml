@@ -7,6 +7,7 @@ services:
       - public
     ports:
       - "8010:8010"
+  
 
 networks:
   public:

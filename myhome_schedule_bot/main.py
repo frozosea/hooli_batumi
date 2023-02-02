@@ -47,12 +47,14 @@ import os
 
 from dotenv import load_dotenv
 from aiogram import Bot
-from data_parser import Request
+from data_parser import SimpleRequest
+from data_parser import BrowserRequest
 from data_parser import Parser
 from data_parser import Provider as ApartmentDataParser
 
 from cron import CronManager
-from request import Request as DomainRequest
+from request import SimpleRequest as DomainSimpleRequest
+from request import BrowserRequest as DomainBrowserRequest
 
 from provider import FlatProvider
 from repository import Repository
@@ -69,15 +71,27 @@ if __name__ == '__main__':
         load_dotenv()
     except Exception:
         print("No .env file")
+
     proxy_repo = ProxyRepository([proxy for proxy in os.environ.get("PROXIES").split(";")])
-    apartment_data_parser = ApartmentDataParser(
-        Request(browser_url=os.environ.get("BROWSER_URL"), auth_password=os.environ.get("AUTH_PASSWORD")), Parser(),
-        proxy_repo)
     cron = CronManager()
     cron.start()
-    flat_provider = FlatProvider(
-        DomainRequest(browser_url=os.environ.get("BROWSER_URL"), auth_password=os.environ.get("AUTH_PASSWORD")),
-        proxy_repo)
+
+    USE_BROWSER = int(os.environ.get("USE_BROWSER"))
+    if USE_BROWSER == 1:
+        apartment_data_parser = ApartmentDataParser(
+            BrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD")), Parser(),
+            proxy_repo)
+        flat_provider = FlatProvider(
+            DomainBrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD")),
+            proxy_repo)
+    else:
+        apartment_data_parser = ApartmentDataParser(
+            SimpleRequest(), Parser(),
+            proxy_repo)
+        flat_provider = FlatProvider(
+            DomainSimpleRequest(),
+            proxy_repo)
+
     bot = Bot(token=os.environ.get("BOT_TOKEN"))
     delivery = Delivery(bot)
     task_provider = TaskProvider(delivery, Repository().migrate(), flat_provider, apartment_data_parser)

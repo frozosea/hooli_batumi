@@ -30,7 +30,7 @@ class IRequest(ABC):
         ...
 
 
-class Request(IRequest):
+class BrowserRequest(IRequest):
 
     def __init__(self, browser_url: str, auth_password: str):
         self.__browser_url = browser_url
@@ -78,6 +78,23 @@ class Request(IRequest):
                 raise Exception(f"WRONG TASK STATUS IN GET APARTMENT INFO: {task_status}")
             return j["output"]
 
+
+class SimpleRequest(IRequest):
+    async def send(self, url: str, proxy: str) -> str:
+        if proxy:
+            if "socks" in proxy:
+                connector = aiohttp_socks.ProxyConnector.from_url(proxy)
+                async with ClientSession(connector=connector) as session:
+                    response = await session.get(url, proxy=proxy)
+            elif "http" in proxy or "https" in proxy:
+                async with ClientSession() as session:
+                    response = await session.get(url, proxy=proxy)
+            else:
+                raise Exception("wrong proxy url")
+        else:
+            async with ClientSession() as session:
+                response = await session.get(url)
+        return await response.text()
 
 class IParser(ABC):
     @abstractmethod

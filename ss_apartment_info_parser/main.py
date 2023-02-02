@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
-from request import Request
+from request import BrowserRequest
+from request import SimpleRequest
 from scrapper import Parser
 from service import Service
 from transport import Transport
@@ -13,7 +14,11 @@ if __name__ == '__main__':
         print("No .env file")
 
     allowed_users = [int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]
-    request = Request(os.environ.get("BROWSER_URL", os.environ.get("AUTH_PASSWORD")))
+    USE_BROWSER = int(os.environ.get("USE_BROWSER"))
+    if USE_BROWSER == 1:
+        request = BrowserRequest(os.environ.get("BROWSER_URL", os.environ.get("AUTH_PASSWORD")))
+    else:
+        requests = SimpleRequest()
     parser = Parser()
     service = Service(request=request, parser=parser,
                       repository=ProxyRepository([proxy for proxy in os.environ.get("PROXIES").split(";")]))
