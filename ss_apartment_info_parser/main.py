@@ -26,7 +26,7 @@ if __name__ == '__main__':
         request = BrowserRequest(os.environ.get("BROWSER_URL"), os.environ.get("AUTH_PASSWORD"),
                                  os.environ.get("MACHINE_IP"))
     else:
-        requests = SimpleRequest()
+        request = SimpleRequest()
 
     parser = Parser()
     service = Service(request=request, parser=parser,

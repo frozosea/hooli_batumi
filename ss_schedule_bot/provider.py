@@ -15,7 +15,7 @@ class FlatProvider:
         self.__parser = Parser()
         self.__proxy_repository = proxy_repository
 
-    async def get_last_appartments(self, max_flat_number: int, url: str) -> List[LastAppartment]:
+    async def get_last_appartments(self, max_flat_number: int, url: str,proxy: str =None) -> List[LastAppartment]:
         l = []
         html = await self.__req.send(url, proxy=self.__proxy_repository.get())
         for i in range(5, max_flat_number + 5):

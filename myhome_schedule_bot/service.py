@@ -15,10 +15,10 @@ class Service:
         self.__cron = cron
         self.__repository = repository
 
-    def add(self, url: str, group_id: int | float, proxy: str) -> None:
+    def add(self, url: str, group_id: int | float, proxy: str = None) -> None:
         task = self.__task_provider.get_task(start_date=datetime.datetime.now(), url=url, chat_id=group_id,
-                                             max_flat_number=4, proxy=proxy)
-        self.__cron.add(task_id=str(group_id), fn=task, trigger='interval', hours=1)
+                                             max_flat_number=3, proxy=proxy)
+        self.__cron.add(task_id=str(group_id), fn=task, trigger='interval', minutes=20)
         self.__repository.add_job(AddTask(Url=url, GroupId=group_id))
 
     def remove(self, id: int | str) -> None:
@@ -29,4 +29,4 @@ class Service:
         if len(all_jobs):
             for job in all_jobs:
                 task = self.__task_provider.get_task(max_flat_number=3, url=job.Url, chat_id=job.GroupId)
-                self.__cron.add(task_id=str(job.GroupId), fn=task, trigger='interval', minutes=10)
+                self.__cron.add(task_id=str(job.GroupId), fn=task, trigger='interval', minutes=20)

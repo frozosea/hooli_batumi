@@ -35,8 +35,7 @@ class Bot:
                 text = message.text
                 split = text.split("\n")
                 j = {}
-                if len(split) == 4:
-
+                if len(split) == 3:
                     try:
                         j["command"] = split[0].split(":")[1].strip()
                     except:
@@ -51,18 +50,14 @@ class Bot:
 
                     command = j["command"]
                     if command == "add":
-                        if "https://www.myhome.ge" in message.text:
+                        if "ss.ge" in message.text:
                             try:
                                 j["url"] = split[2].split(":", 1)[1].strip()
                             except:
                                 await message.answer("Введите команду в правильном формате!")
                                 return
                             try:
-                                j["proxy"] = split[3].split(":", 1)[1].strip()
-                            except:
-                                ...
-                            try:
-                                self.__service.add(group_id=j["group_id"], url=j["url"], proxy=j["proxy"])
+                                self.__service.add(group_id=j["group_id"], url=j["url"])
                                 await message.answer("Задача была добавлена в бота!")
                             except Exception as e:
                                 print(e)

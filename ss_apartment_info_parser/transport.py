@@ -23,7 +23,7 @@ class Transport:
         async def parse(message: types.Message):
             user_id = message.from_user.id
             if user_id in self.__allowed_users:
-                if "https://www.ss.ge" in message.text:
+                if "ss.ge" in message.text:
                     await message.reply("В процессе парсинга... Это может занять несколько минут...")
                     result = await self.__service.get(message.text)
                     media = types.MediaGroup()
