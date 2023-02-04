@@ -4,7 +4,7 @@ from abc import abstractmethod
 import aiogram
 from aiogram import types
 
-from data_parser import Apartment
+from entity import Apartment
 
 
 class IDelivery(ABC):
@@ -20,7 +20,8 @@ class Delivery(IDelivery):
 
     @staticmethod
     def __generate_messsage(r: Apartment):
-        return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$/{r.LariPrice if r.LariPrice else 0}₾\n\nАдрес: {r.Address} {("," + r.Floor) if r.Floor else ""}\n \n\n Url: {r.Url}"""[:3800]
+        return f"""Описание: {r.Description} \nПлощадь: {r.Square}\nЦена: {r.UsdPrice}$\n\nАдрес: {r.Address} {("," + str(r.Floor)) if r.Floor else ""}\n \n\n Url: {r.Url}"""[
+               :3800]
 
     async def send(self, result: Apartment, **kwargs) -> None:
         media = types.MediaGroup()
