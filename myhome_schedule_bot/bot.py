@@ -21,9 +21,9 @@ class Bot:
                     GroupId: айди беседы, куда присылать сообщения с квартирами
                     Url: ссылка (должная уже содержать в себе все фильтры)
                     Proxy: прокси
-                    
+
                     Если команда на удаление, то поле Url,Proxy не нужно, достаточно двух первых.
-                    
+
                     Этот бот принадлежит Hooli real estate inc. 
                     Если Вы не являетесь сотрудником нашей компании, пожалуйста, не пользуйтесь этим ботом. Спасибо!
                 """)
@@ -52,7 +52,10 @@ class Bot:
                     if command == "add":
                         if "myhome.ge" in message.text:
                             try:
-                                j["url"] = split[2].split(":", 1)[1].strip()
+                                url = split[2].split(":", 1)[1].strip()
+                                if "ajax" not in url.lower():
+                                    url += "&Ajax=1"
+                                j["url"] = url
                             except:
                                 await message.answer("Введите команду в правильном формате!")
                                 return

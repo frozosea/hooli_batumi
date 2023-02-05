@@ -47,6 +47,7 @@ class TaskProvider:
             time.sleep(100)
             for apart in last_aparts:
                 apart_from_repository = self.__repository.get(apart.Id)
+                print(f"{apart.Id} ALREADY IN REPOSITORY" if apart_from_repository else f"{apart.Id} NOT IN REPOSITORY")
                 if not apart_from_repository:
                     try:
                         self.__repository.add(apart)

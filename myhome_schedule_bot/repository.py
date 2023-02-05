@@ -1,4 +1,3 @@
-import datetime
 import random
 import sqlite3
 from abc import ABC
@@ -6,16 +5,16 @@ from typing import List
 from abc import abstractmethod
 
 from entity import AddTask
-from entity import LastAppartment
+from entity import Apartment
 
 
 class IRepository(ABC):
     @abstractmethod
-    def add(self, obj: LastAppartment) -> None:
+    def add(self, obj: Apartment) -> None:
         ...
 
     @abstractmethod
-    def get(self, id: str) -> LastAppartment:
+    def check_exists(self, id: str) -> bool:
         ...
 
 
@@ -34,7 +33,7 @@ class Repository(IRepository):
         self.__con.commit()
         return self
 
-    def add(self, obj: LastAppartment) -> None:
+    def add(self, obj: Apartment) -> None:
         try:
             self.__con.cursor().execute('INSERT INTO myhome(myhome_id,add_time,url) VALUES (?,?,?)',
                                         (obj.Id, obj.AddDate.timestamp(), obj.Url))
@@ -42,13 +41,14 @@ class Repository(IRepository):
         except Exception as e:
             print(f"{obj.Id} already exists")
 
-    def get(self, id: str) -> LastAppartment:
+    def check_exists(self, id: str) -> bool:
         cur = self.__con.cursor()
         cur.execute('SELECT * FROM myhome WHERE myhome_id = ?', (id,))
         raw = cur.fetchone()
         if not raw:
-            return None
-        return LastAppartment(Id=raw[1], AddDate=datetime.datetime.fromtimestamp(raw[2]), Url=raw[3])
+            return False
+        return True
+
 
 class ICronRepository(ABC):
     @abstractmethod
@@ -58,6 +58,7 @@ class ICronRepository(ABC):
     @abstractmethod
     def get_jobs(self) -> List[AddTask]:
         ...
+
 
 class CronRepository(ICronRepository):
     def __init__(self):
@@ -86,6 +87,7 @@ class CronRepository(ICronRepository):
         if len(all) > 0:
             return [AddTask(Url=item[1], GroupId=item[2]) for item in all]
         return []
+
 
 class IProxyRepository(ABC):
     @abstractmethod

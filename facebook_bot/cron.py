@@ -6,7 +6,6 @@ from typing import Callable
 from dataclasses import dataclass
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 
 @dataclass()
