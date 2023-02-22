@@ -59,6 +59,10 @@ class ICronRepository(ABC):
     def get_jobs(self) -> List[AddTask]:
         ...
 
+    @abstractmethod
+    def delete(self, id: str) -> None:
+        ...
+
 
 class CronRepository(ICronRepository):
     def __init__(self):
@@ -87,6 +91,14 @@ class CronRepository(ICronRepository):
         if len(all) > 0:
             return [AddTask(Url=item[1], GroupId=item[2]) for item in all]
         return []
+
+    def delete(self, id: str) -> None:
+        try:
+            self.__con.cursor().execute('DELETE FROM jobs WHERE group_id = ?',
+                                        (id,))
+            self.__con.commit()
+        except Exception as e:
+            print(f"{id} cannot delete error: {e}")
 
 
 class IProxyRepository(ABC):

@@ -22,6 +22,7 @@ class Service:
         self.__repository.add_job(AddTask(Url=url, GroupId=group_id))
 
     def remove(self, id: int | str) -> None:
+        self.__repository.delete(id)
         self.__cron.remove(str(id))
 
     def retry_tasks(self):

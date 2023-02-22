@@ -26,9 +26,10 @@ class Transport:
                 if "ss.ge" in message.text:
                     await message.reply("В процессе парсинга... Это может занять несколько минут...")
                     result = await self.__service.get(message.text)
+                    print(result)
                     media = types.MediaGroup()
                     for index, image in enumerate(result.Images, 0):
-                        if index <= 10:
+                        if index <= 9:
                             media.attach_photo(types.InputFile.from_url(image),
                                                self.__generate_messsage(result) if index == 0 else "")
                     await self.__bot.send_media_group(chat_id=message.chat.id, media=media)

@@ -12,7 +12,7 @@ class IParser(ABC):
         ...
 
 
-class ClientParser(IParser):
+class ClientOnRentParser(IParser):
     @staticmethod
     def __check_contains_give_rent_messages(message: str) -> bool:
         for word in ["сдам", "сдается", "сдадим", "сдаётся"]:
@@ -25,6 +25,15 @@ class ClientParser(IParser):
                      "арендую",
                      "rent", "arenduem", "snimem", "snimu", "sniat'", "sniat"]:
             if word in message.lower() and not self.__check_contains_give_rent_messages(message):
+                return True
+        return False
+
+
+class ClientOnBuyParser(IParser):
+    def check(self, message: str) -> bool:
+        for word in ["куплю", "купим", "купить", "покупаем", "buy", "bought", "kuplu", "kuplv", "kupim",
+                     "cupim", "cuplu", "kupit"]:
+            if word in message.lower():
                 return True
         return False
 

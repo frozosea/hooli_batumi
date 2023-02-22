@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import Callable
 from dataclasses import dataclass
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 @dataclass()
@@ -39,11 +39,10 @@ class ICronManager(ABC):
 class CronManager(ICronManager):
 
     def __init__(self):
-        self.__manager = AsyncIOScheduler()
+        self.__manager = BackgroundScheduler()
 
     def add(self, task_id: any, fn: Callable, *args, **kwargs) -> Job:
-        self.__manager.add_job(func=fn, id=str(task_id), replace_existing=False, jobstore="default",
-                               misfire_grace_time=3600, *args, **kwargs)
+        self.__manager.add_job(func=fn, id=str(task_id), replace_existing=False, jobstore="default", *args, **kwargs)
         return
 
     def remove(self, task_id: any) -> None:

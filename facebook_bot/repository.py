@@ -32,7 +32,7 @@ class Repository(IRepository):
     def add(self, message: str) -> int:
         try:
             self.__con.cursor().execute('INSERT INTO messages(message) VALUES (?)',
-                                        (message,))
+                                        (message.lower(),))
             self.__con.commit()
         except Exception as e:
             print(e)
@@ -40,7 +40,7 @@ class Repository(IRepository):
 
     def exists(self, message: str) -> bool:
         cur = self.__con.cursor()
-        cur.execute('SELECT * FROM messages WHERE message = ?', (message,))
+        cur.execute('SELECT * FROM messages WHERE message = ?', (message.lower(),))
         raw = cur.fetchone()
         return True if raw else False
 
@@ -48,3 +48,4 @@ class Repository(IRepository):
         self.__con.cursor().execute('DROP TABLE IF EXISTS messages')
         self.__con.commit()
         self.migrate()
+

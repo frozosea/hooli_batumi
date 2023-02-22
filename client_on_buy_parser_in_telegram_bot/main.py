@@ -25,12 +25,6 @@ class ChatBot:
                 return False
         return True
 
-    def __check_contains_give_rent_messages(self, message):
-        for word in ["сдам", "сдается", "сдадим", "сдаётся"]:
-            if word in message.lower():
-                return True
-        return False
-
     def __init__(self, api_id: str, api_hash: str, send_to_group_id: int, repository: Type[IRepository]):
         self.__client = TelegramClient('session_name', int(api_id), api_hash)
         self.__client.start()
@@ -42,16 +36,15 @@ class ChatBot:
             message = event.message.message.lower()
             if self.__is_forward(event):
                 try:
-                        for word in ["сниму", "снимем", "снять", "снимаем", "арендовать", "аренда", "арендуем",
-                                     "арендую",
-                                     "rent", "arenduem", "snimem", "snimu", "sniat'", "sniat"]:
-                            if word in message.lower():
-                                print(self.__send_to_group_id)
-                                print(event.message)
-                                print(self.__repository.exists(message))
-                                if not self.__repository.exists(message):
-                                    self.__repository.add(message)
-                                    await self.__client.forward_messages(self.__send_to_group_id, [event.message])
+                    for word in ["куплю", "купим", "купить", "покупаем", "buy", "bought", "kuplu", "kuplv", "kupim",
+                                 "cupim", "cuplu", "kupit"]:
+                        if word in message.lower():
+                            print(self.__send_to_group_id)
+                            print(event.message)
+                            print(self.__repository.exists(message))
+                            if not self.__repository.exists(message):
+                                self.__repository.add(message)
+                                await self.__client.forward_messages(self.__send_to_group_id, [event.message])
                 except Exception as e:
                     print(e)
 

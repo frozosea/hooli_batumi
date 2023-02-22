@@ -9,6 +9,7 @@ from scrapper import MessageParser
 
 
 from transport import Transport
+from repository import Repository
 
 
 def get_categories() -> List[Category]:
@@ -28,6 +29,6 @@ if __name__ == '__main__':
     message_parser = MessageParser(message_checker, number_parser)
 
     transport = Transport(os.environ.get("API_ID"), os.environ.get("API_HASH"), message_checker, message_parser,
-                          categories)
+                          categories,[int(item) for item in os.environ.get("STOP_LIST_IDS").split(";")],Repository().migrate())
 
     transport.start()

@@ -1,3 +1,4 @@
+import asyncio
 import os
 import json
 from typing import List
@@ -6,14 +7,16 @@ from aiogram import Bot
 from entity import Category
 from cron import CronManager
 from scrapper import NumberParser
-from provider import ClientProvider
+from provider import ClientOnRentProvider
 from repository import Repository
 from provider import PropertySaleObjectProvider
 from provider import PropertyRentObjectProvider
 from task import TaskProvider
 from facebook import FacebookMessageProvider
 from service import Service
-from bot import Bot
+from bot import Bot as Transport
+from repository import Repository
+from request import Request
 
 
 def get_categories() -> List[Category]:
@@ -28,11 +31,11 @@ if __name__ == '__main__':
         print("no .env file")
     bot = Bot(token=os.environ.get("BOT_TOKEN"))
 
-    cron = CronManager()
-    cron.start()
+    c = CronManager()
+    c.start()
     repository = Repository().migrate()
-    client_provider = ClientProvider(repository=repository, chat_id=int(os.environ.get("RENT_REQUEST_GROUP_ID")),
-                                     bot=bot)
+    client_provider = ClientOnRentProvider(repository=repository, chat_id=int(os.environ.get("RENT_REQUEST_GROUP_ID")),
+                                           bot=bot)
 
     sale_object_provider = PropertySaleObjectProvider(repository=repository,
                                                       chat_id=int(os.environ.get("SALE_OBJECTS_GROUP_ID")), bot=bot)
@@ -41,20 +44,21 @@ if __name__ == '__main__':
                                                       categories=get_categories())
 
     providers = [client_provider, sale_object_provider, rent_object_provider]
-
-    task_provider = TaskProvider(providers=providers)
+    cookie_provider = Request(os.environ.get("FACEBOOK_LOGIN"), os.environ.get("FACEBOOK_PASSWORD"), "cookies.json")
+    task_provider = TaskProvider(providers=providers, cookie_path="cookies.json")
 
     LIMIT_OF_MESSAGES = int(os.environ.get("LIMIT_OF_MESSAGES"))
 
-    fb_providers = [FacebookMessageProvider(cookies="cookies.txt", limit=LIMIT_OF_MESSAGES, group_id=int(group)) for
+    fb_providers = [FacebookMessageProvider(limit=LIMIT_OF_MESSAGES, group_id=group) for
                     group in os.environ.get("FACEBOOK_GROUP_IDS").split(";")]
-
-    service = Service(cron=cron, task=task_provider)
+    print(len(fb_providers))
+    service = Service(cron=c, task=task_provider,cookie_provider=cookie_provider)
 
     MINUTES = int(os.environ.get("MINUTES"))
 
+    service.add_cookies_writer_task(MINUTES - 3)
+
     for fb in fb_providers:
         service.add(fb, MINUTES)
-
-    Bot(service=service, bot=bot,
-        allowed_users=[int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()
+    Transport(service=service, bot=bot,
+              allowed_users=[int(user) for user in os.environ.get("ALLOWED_USERS").split(";")]).run()

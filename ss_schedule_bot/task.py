@@ -1,4 +1,5 @@
 import time
+import asyncio
 from typing import Type
 from typing import Coroutine
 from delivery import IDelivery
@@ -27,14 +28,14 @@ class TaskProvider:
             print(e)
             return
         print(last_aparts)
-        time.sleep(100)
+        await asyncio.sleep(100)
         for apart in last_aparts:
             apart_from_repository = self.__repository.get(apart.Id)
             if not apart_from_repository:
                 self.__repository.add(apart)
             info_about_flat = await self.__appartment_info_parser.get(apart.Url)
             print(info_about_flat)
-            time.sleep(100)
+            await asyncio.sleep(100)
 
     def get_task(self, max_flat_number: int, url: str, proxy: str = None, **kwargs) -> Coroutine:
         async def task():
@@ -44,7 +45,7 @@ class TaskProvider:
             except Exception as e:
                 print(e)
                 return
-            time.sleep(100)
+            await asyncio.sleep(100)
             for apart in last_aparts:
                 apart_from_repository = self.__repository.get(apart.Id)
                 print(f"{apart.Id} ALREADY IN REPOSITORY" if apart_from_repository else f"{apart.Id} NOT IN REPOSITORY")
@@ -53,10 +54,10 @@ class TaskProvider:
                         self.__repository.add(apart)
                         info_about_flat = await self.__appartment_info_parser.get(apart.Url, proxy=proxy)
                         await self.__delivery.send(result=info_about_flat, **kwargs)
-                        time.sleep(100)
+                        await asyncio.sleep(100)
                     except Exception as e:
                         print(e)
-                        time.sleep(90)
+                        await asyncio.sleep(90)
                         continue
 
         return task
