@@ -8,6 +8,7 @@ from entity import Category
 from cron import CronManager
 from scrapper import NumberParser
 from provider import ClientOnRentProvider
+from provider import ClientOnBuyProvider
 from repository import Repository
 from provider import PropertySaleObjectProvider
 from provider import PropertyRentObjectProvider
@@ -34,16 +35,18 @@ if __name__ == '__main__':
     c = CronManager()
     c.start()
     repository = Repository().migrate()
-    client_provider = ClientOnRentProvider(repository=repository, chat_id=int(os.environ.get("RENT_REQUEST_GROUP_ID")),
-                                           bot=bot)
-
+    client_on_rent_provider = ClientOnRentProvider(repository=repository,
+                                                   chat_id=int(os.environ.get("RENT_REQUEST_GROUP_ID")),
+                                                   bot=bot)
+    client_on_sale_provider = ClientOnBuyProvider(repository=repository, bot=bot,
+                                                  chat_id=os.environ.get("BUY_REQUEST_GROUP_ID"))
     sale_object_provider = PropertySaleObjectProvider(repository=repository,
                                                       chat_id=int(os.environ.get("SALE_OBJECTS_GROUP_ID")), bot=bot)
 
     rent_object_provider = PropertyRentObjectProvider(repository=repository, bot=bot, number_parser=NumberParser(),
                                                       categories=get_categories())
 
-    providers = [client_provider, sale_object_provider, rent_object_provider]
+    providers = [client_on_rent_provider, sale_object_provider, rent_object_provider, client_on_sale_provider]
     cookie_provider = Request(os.environ.get("FACEBOOK_LOGIN"), os.environ.get("FACEBOOK_PASSWORD"), "cookies.json")
     task_provider = TaskProvider(providers=providers, cookie_path="cookies.json")
 
@@ -52,7 +55,7 @@ if __name__ == '__main__':
     fb_providers = [FacebookMessageProvider(limit=LIMIT_OF_MESSAGES, group_id=group) for
                     group in os.environ.get("FACEBOOK_GROUP_IDS").split(";")]
     print(len(fb_providers))
-    service = Service(cron=c, task=task_provider,cookie_provider=cookie_provider)
+    service = Service(cron=c, task=task_provider, cookie_provider=cookie_provider)
 
     MINUTES = int(os.environ.get("MINUTES"))
 
